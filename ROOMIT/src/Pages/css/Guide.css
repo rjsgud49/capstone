@@ -1,7 +1,10 @@
-/* Guide.css (정리된 깔끔한 버전) */
-
-* {
-    box-sizing: border-box;
+:root {
+    --primary-color: #4173EF;
+    --primary-hover: #3562D4;
+    --secondary-bg: #e8efff;
+    --secondary-hover: #d1ddfb;
+    --bg-color: #f4f7fd;
+    --shadow-color: rgba(65, 115, 239, 0.15);
 }
 
 .guide-container {
@@ -10,37 +13,14 @@
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     line-height: 1.6;
     color: #333;
+    background-color: var(--bg-color);
 }
 
-/* Header */
 .guide-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
     color: white;
     padding: 60px 20px;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.guide-header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
-    animation: float 20s infinite linear;
-}
-
-@keyframes float {
-    0% {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-
-    100% {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
 }
 
 .guide-title {
@@ -48,44 +28,18 @@
     font-weight: 800;
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 15px;
-    margin-bottom: 20px;
-}
-
-.title-icon {
-    font-size: 3.5rem;
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-
-    0%,
-    20%,
-    50%,
-    80%,
-    100% {
-        transform: translateY(0);
-    }
-
-    40% {
-        transform: translateY(-10px);
-    }
-
-    60% {
-        transform: translateY(-5px);
-    }
 }
 
 .guide-subtitle {
+    margin-top: 1rem;
     font-size: 1.2rem;
     opacity: 0.9;
-    font-weight: 300;
 }
 
-/* Content */
 .guide-content {
     padding: 40px 20px;
-    background: #f8fafc;
 }
 
 .guide-timeline {
@@ -100,43 +54,13 @@
     top: 80px;
     bottom: 80px;
     width: 4px;
-    background-color: #667eea;
+    background-color: var(--primary-color);
     border-radius: 2px;
 }
 
 .guide-step {
     position: relative;
     margin-bottom: 40px;
-    cursor: pointer;
-    animation: fadeInUp 0.6s ease forwards;
-}
-
-.guide-step:nth-child(1) {
-    animation-delay: 0.1s;
-}
-
-.guide-step:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.guide-step:nth-child(3) {
-    animation-delay: 0.3s;
-}
-
-.guide-step:nth-child(4) {
-    animation-delay: 0.4s;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .step-number {
@@ -145,7 +69,7 @@
     top: 20px;
     width: 60px;
     height: 60px;
-    background-color: #667eea;
+    background-color: var(--primary-color);
     color: white;
     border-radius: 50%;
     display: flex;
@@ -153,7 +77,6 @@
     justify-content: center;
     font-size: 1.5rem;
     font-weight: bold;
-    box-shadow: 0 4px 15px rgba(113, 135, 233, 0.3);
 }
 
 .step-content {
@@ -162,7 +85,6 @@
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     overflow: hidden;
-    transition: box-shadow 0.3s ease;
 }
 
 .step-header {
@@ -170,14 +92,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f8fafc;
+    background: var(--secondary-bg);
+    cursor: pointer;
     border-bottom: 1px solid #e2e8f0;
 }
 
 .expand-icon {
     width: 30px;
     height: 30px;
-    background-color: #667eea;
+    background-color: var(--primary-color);
     color: white;
     border-radius: 50%;
     display: flex;
@@ -197,69 +120,78 @@
     padding: 30px;
 }
 
-/* Cards */
-.detail-card {
+.detail-card,
+.guideline-item,
+.resolution-step {
     display: flex;
     gap: 20px;
     padding: 25px;
-    background: #f8fafc;
-    border-left: 4px solid #667eea;
+    background: var(--secondary-bg);
+    border-left: 4px solid var(--primary-color);
     border-radius: 12px;
     margin-bottom: 20px;
     transition: background 0.3s ease;
 }
 
-.detail-card:hover {
-    background: #f1f5f9;
+.detail-card:hover,
+.guideline-item:hover,
+.resolution-step:hover {
+    background: var(--secondary-hover);
+}
+
+.card-icon,
+.guideline-icon,
+.resolution-icon {
+    font-size: 2rem;
+}
+
+.tip-box,
+.checklist,
+.warning-box,
+.emergency-contacts {
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .tip-box {
     background: #fffaf0;
     border: 1px solid #fcd34d;
-    border-radius: 12px;
-    padding: 20px;
-    margin-top: 20px;
 }
 
 .checklist {
     background: #f0fff4;
     border: 1px solid #9ae6b4;
-    border-radius: 12px;
-    padding: 20px;
-    margin-top: 20px;
 }
 
 .warning-box {
     background: #fff5f5;
     border: 1px solid #feb2b2;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 25px;
 }
 
-.guideline-item {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
+.emergency-contacts {
+    background: #fffaf0;
+    border: 1px solid #fbd38d;
 }
 
-.guideline-item:hover {
-    background: #f8fafc;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
 }
 
-/* Document Section */
+.document-section {
+    margin-top: 25px;
+}
+
 .document-header {
-    background: #4299e1;
+    background: var(--primary-color);
     color: white;
     padding: 15px 20px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .copy-btn {
@@ -271,59 +203,18 @@
     cursor: pointer;
 }
 
-/* Dispute */
-.resolution-step {
-    display: flex;
-    gap: 20px;
-    padding: 25px;
-    background: white;
-    border-left: 4px solid #48bb78;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    transition: background 0.3s ease;
+.document-sample {
+    background: var(--secondary-bg);
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 10px;
+    white-space: pre-wrap;
 }
 
-.resolution-step:hover {
-    background: #f0fff4;
-}
-
-/* Emergency Contacts */
-.emergency-contacts {
-    background: #fffaf0;
-    border: 1px solid #fbd38d;
-    border-radius: 12px;
-    padding: 25px;
-    margin-top: 25px;
-}
-
-.contact-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-}
-
-/* Footer */
-.guide-footer {
-    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-    color: white;
-    padding: 60px 20px;
-}
-
-.support-box {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    padding: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.support-btn.primary {
-    background: #667eea;
-    color: white;
-}
-
-.support-btn.primary:hover {
-    background: #5a67d8;
+.checklist-items {
+    margin-left: 10px;
+    padding: 0;
 }
 
 /* Responsive */
@@ -345,17 +236,5 @@
 
     .step-content {
         margin-left: 70px;
-    }
-}
-
-/* Print */
-@media print {
-    .expand-icon {
-        display: none;
-    }
-
-    .step-details {
-        max-height: none !important;
-        padding: 20px !important;
     }
 }
