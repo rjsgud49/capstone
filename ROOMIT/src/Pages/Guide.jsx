@@ -8,6 +8,7 @@ const Guide = () => {
     setActiveSection(activeSection === sectionId ? null : sectionId);
   };
 
+  
   return (
     <div className="guide-container">
       <div className="guide-header">
