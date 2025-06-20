@@ -1,0 +1,86 @@
+/* HeroBanner.css */
+.hero-banner {
+    position: relative;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    padding: 0 20px;
+}
+
+.hero-banner__background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/backgrand.png');
+    transform: scale(1.1);
+    background-size: cover;
+    background-position: center;
+    filter: blur(8px);
+    z-index: 0;
+}
+
+.hero-content {
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 40px;
+    max-width: 800px;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 36px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.hero-subtitle {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.search-container {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+
+.search-button:hover {
+    background-color: #3a5ce5;
+}
+
+.test-promo {
+    font-size: 16px;
+    color: #ffffff;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.test-promo p {
+    margin-bottom: 15px;
+    color: #666;
+
+}
+
+.test-button {
+    font-size: 14px;
+    color: #ffffff;
+    background-color: #4a6cf7;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.test-button:hover {
+    background-color: #3a5ce5;
+}

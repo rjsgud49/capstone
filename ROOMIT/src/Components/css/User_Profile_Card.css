@@ -1,0 +1,108 @@
+.profile-card {
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-avatar {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    /* 원형 */
+    object-fit: cover;
+    /* 비율 유지하며 채우기 */
+    border: 2px solid #ddd;
+    /* 얇은 테두리 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* 그림자 */
+    transition: transform 0.3s ease;
+}
+
+
+.profile-image-container {
+    flex-shrink: 0;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #E0E0E0;
+    font-size: 60px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.profile-info {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.Cardprofile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.profile-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.profile-age {
+    font-size: 1rem;
+    color: #666;
+}
+
+.Cardprofile-job {
+    color: #4A90E2;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.profile-description {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+.profile-description p {
+    margin: 5px 0;
+}
+
+.profile-detail-button {
+    width: 280px;
+    padding: 10px 0;
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: auto;
+}
+
+.profile-detail-button:hover {
+    background-color: #3562D4;
+}

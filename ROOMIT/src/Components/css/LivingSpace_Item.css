@@ -1,0 +1,14 @@
+.livingSpace-item .image-container {
+  flex-shrink: 0;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.livingSpace-item .info {
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}

@@ -1,0 +1,29 @@
+/* RoommateSection.css */
+.roommate-section {
+    padding: 40px 20px 60px;
+}
+
+.roommate-content {
+    max-width: 150vh;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.roommate-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 30px;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .roommate-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .roommate-grid {
+        grid-template-columns: 1fr;
+    }
+}

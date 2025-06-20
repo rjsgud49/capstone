@@ -1,0 +1,40 @@
+/* HousingCard.css */
+.housing-card {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+}
+
+.housing-icon-wrapper {
+    width: 100px;
+    height: 90px;
+    background-color: #f0f4ff;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.housing-icon {
+    font-size: 40px;
+}
+
+.housing-details {
+    flex-grow: 1;
+}
+
+.housing-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.housing-info,
+.housing-features {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+}

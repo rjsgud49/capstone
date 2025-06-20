@@ -1,0 +1,520 @@
+/* Improved MeetingDetail.css styling */
+
+/* Global improvements */
+.meeting-user-detail {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+    background-color: #f9fafc;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    color: #333;
+}
+
+/* Enhanced profile header */
+.profile-header {
+    display: flex;
+    gap: 24px;
+    padding: 20px;
+    margin-bottom: 30px;
+    justify-content: center;
+}
+
+
+/* 프로필 이미지 영역 스타일 */
+.mypageprofile-image-large {
+    width: 150px;
+    height: 150px;
+    flex-shrink: 0;
+}
+
+/* 아바타 컨테이너 스타일 */
+.avatar-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* 프로필 이미지 스타일 */
+.room-avatar-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
+/* 아바타 플레이스홀더 스타일 */
+.avatar-placeholder {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    background-color: #f0f0f0;
+}
+
+.avatar-placeholder span {
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+/* 아바타 업로드 버튼 스타일 */
+.avatar-upload-button {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 0;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.avatar-upload-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.profile-basic-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.input-field {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 100%;
+}
+
+.profile-job-location {
+    display: flex;
+    gap: 20px;
+}
+
+.profile-job,
+.profile-location {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-job .input-field,
+.profile-location .input-field {
+    flex: 1;
+}
+
+.profile-basic-info {
+    flex: 1;
+}
+
+.profile-basic-info h1 {
+    margin: 0 0 12px 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.profile-job-location {
+    display: flex;
+    gap: 24px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.profile-job,
+.profile-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #555;
+    font-size: 16px;
+    padding: 6px 12px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+/* Unified section styling */
+.meetprofile-section {
+    margin-bottom: 32px;
+    padding: 24px;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.meetprofile-section:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.meetprofile-section h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 18px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #e6ecf7;
+}
+
+/* Lifestyle sections */
+.lifestyle-category h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    color: #4a6eff;
+    margin-bottom: 20px;
+}
+
+/* Grid layouts */
+.lifestyle-grid,
+.lifestyle-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+/* Lifestyle items - shared styles */
+.lifestyle-item,
+.lifestyle-detail-item {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.lifestyle-item:hover,
+.lifestyle-detail-item:hover {
+    background-color: #f5f8ff;
+    transform: translateY(-3px);
+    border-color: #dce4ff;
+}
+
+.lifestyle-item svg,
+.lifestyle-detail-item svg {
+    margin-bottom: 10px;
+    color: #4a6eff;
+    padding: 8px;
+    background-color: #edf2ff;
+    border-radius: 50%;
+}
+
+.lifestyle-item span,
+.lifestyle-detail-item span {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.lifestyle-item strong,
+.lifestyle-detail-item strong {
+    font-size: 16px;
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+/* Specific lifestyle items styling */
+.lifestyle-detail-item {
+    border: 1px solid #f0f0f0;
+}
+
+/* Interest tags */
+.interests-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.interest-tag {
+    background-color: #edf2ff;
+    color: #4a6eff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.interest-tag:hover {
+    background-color: #dce4ff;
+    transform: translateY(-2px);
+}
+
+/* Enhanced action buttons */
+.action-buttons {
+    display: flex;
+    gap: 20px;
+    margin: 30px 0 50px;
+}
+
+.like-button,
+.chat-button {
+    flex: 1;
+    padding: 16px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    outline: none;
+}
+
+.like-button {
+    background-color: white;
+    color: #ff4b77;
+    border: 2px solid #ff4b77;
+}
+
+.chat-button {
+    background-color: #4a6eff;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(74, 110, 255, 0.2);
+}
+
+.like-button:hover,
+.like-button:focus {
+    background-color: #fff0f3;
+    transform: translateY(-2px);
+}
+
+.chat-button:hover,
+.chat-button:focus {
+    background-color: #3a5cff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(74, 110, 255, 0.3);
+}
+
+/* Accessibility enhancements */
+.like-button:focus,
+.chat-button:focus {
+    outline: 2px solid #4a6eff;
+    outline-offset: 2px;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+    .meeting-user-detail {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .lifestyle-grid,
+    .lifestyle-detail-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .profile-image-large {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .profile-job-location {
+        justify-content: center;
+    }
+
+    .like-button,
+    .chat-button {
+        padding: 14px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 640px) {
+    .meeting-user-detail {
+        padding: 16px;
+    }
+
+    .meetprofile-section {
+        padding: 20px;
+    }
+
+    .profile-basic-info h1 {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .lifestyle-grid,
+    .lifestyle-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .meetprofile-section {
+        padding: 16px;
+    }
+
+    .profile-job-location {
+        gap: 12px;
+    }
+
+    .like-button,
+    .chat-button {
+        padding: 12px;
+    }
+
+    .like-button svg,
+    .chat-button svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.input-field,
+.textarea-field {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1px solid #dcdfe6;
+    background-color: #f9fafc;
+    transition: border-color 0.3s ease;
+}
+
+.input-field:focus,
+.textarea-field:focus {
+    border-color: #4a6eff;
+    outline: none;
+    background-color: #fff;
+}
+
+/* 액션 버튼 스타일 개선 */
+.action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+}
+
+.primary-button {
+    padding: 0.75rem 1.5rem;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.primary-button:hover {
+    background-color: #3a80d2;
+}
+
+.primary-button:active {
+    transform: scale(0.98);
+}
+
+.primary-button.saving {
+    background-color: #7fb0ee;
+    cursor: not-allowed;
+}
+
+/* 토글 스위치 스타일 */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.toggle-label {
+    font-weight: 500;
+    color: #333;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.toggle-slider {
+    background-color: #4CAF50;
+}
+
+input:focus+.toggle-slider {
+    box-shadow: 0 0 1px #4CAF50;
+}
+
+input:checked+.toggle-slider:before {
+    transform: translateX(30px);
+}

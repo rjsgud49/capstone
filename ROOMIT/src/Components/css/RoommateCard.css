@@ -1,0 +1,53 @@
+/* RoommateCard.css */
+.roommate-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+}
+
+.roommate-avatar-wrapper {
+    width: 120px;
+    height: 120px;
+    background-color: #f0f4ff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.roommate-avatar {
+    border-radius: 50%;
+    width: 110px;
+    height: 110px;
+    font-size: 60px;
+}
+
+.roommate-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.roommate-info {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.roommate-chat-btn {
+    margin-top: auto;
+    width: 80%;
+    margin-top: 15px;
+    padding: 8px 0;
+}
+
+.roommate-lifestyle p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}

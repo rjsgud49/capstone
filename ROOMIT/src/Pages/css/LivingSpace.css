@@ -1,0 +1,80 @@
+.livingSpace .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.livingSpace .container .title {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  margin-bottom: 70px;
+}
+
+.livingSpace .container .title h1 {
+  font-size: 2.5rem;
+  text-align: left;
+}
+
+.livingSpace .container .title h2 {
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+  text-align: center;
+  font-weight: normal;
+}
+
+.livingSpace .container .title .btn-filter {
+  width: 100px;
+  height: 50px;
+  background-color: #4a6cf7;
+  border-radius: 15px;
+  font-size: 20px;
+  color: #fff;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.livingSpace .container .title .btn-filter:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.livingSpace-list {
+  max-width: 1500px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.livingSpace-list .livingSpace-item {
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding: 30px;
+}
+
+.livingSpace-item .image-container {
+  flex-shrink: 0;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.livingSpace-item .info {
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
