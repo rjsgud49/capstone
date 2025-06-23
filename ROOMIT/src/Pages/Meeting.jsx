@@ -79,13 +79,14 @@ const Meeting = () => {
         console.log("📂 패널 토글 상태:", !open);
     };
 
-    if (isLoading) {
+    if (isLoading || users.length === 0) {
         return <Loading />;
     }
 
     if (error) {
         return <RetryPage errorMessage={error} onRetry={loadProfiles} />;
     }
+
 
     return (
         <div className="roommates-list">
