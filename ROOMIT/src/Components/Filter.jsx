@@ -64,41 +64,39 @@ const FilterPanel = ({ open, setOpen, filters, items, onFilterChange, showFilter
     const togglePanel = () => setOpen(prev => !prev);
 
     const filterItems = useCallback((filtersObj) => {
-        // items가 유효하지 않으면 빈 배열 반환
         if (!items || !Array.isArray(items)) {
             console.warn('FilterPanel: items is not an array or is undefined', items);
-            onFilterChange([]);
+            onFilterChange([]);  // 안전
             return;
         }
 
         const filtered = items
-        .filter(item => {
-            return filters.every(({ category, path, filterFn }) => {
-                const selectedValue = filtersObj[category];
-                if (!selectedValue || selectedValue === '상관없음') return true;
+            .filter(item => {
+                return filters.every(({ category, path, filterFn }) => {
+                    const selectedValue = filtersObj[category];
+                    if (!selectedValue || selectedValue === '상관없음') return true;
 
-                // 동적 속성 접근
-                const getNestedValue = (obj, path) => {
-                    try {
-                        return path.split('.').reduce((prev, curr) => {
-                            return prev && prev[curr] !== undefined ? prev[curr] : undefined;
-                        }, obj);
-                    } catch {
-                        return undefined;
+                    const getNestedValue = (obj, path) => {
+                        try {
+                            return path.split('.').reduce((prev, curr) => {
+                                return prev && prev[curr] !== undefined ? prev[curr] : undefined;
+                            }, obj);
+                        } catch {
+                            return undefined;
+                        }
+                    };
+
+                    const itemValue = getNestedValue(item, path);
+
+                    if (filterFn) {
+                        return filterFn(itemValue, selectedValue);
                     }
-                };
-
-                const itemValue = getNestedValue(item, path);
-
-                // filterFn이 제공된 경우 사용, 아니면 기본적으로 정확한 일치 확인
-                if (filterFn) {
-                    return filterFn(itemValue, selectedValue);
-                }
-                return itemValue === selectedValue;
+                    return itemValue === selectedValue;
+                });
             });
-        });
 
-        onFilterChange(filtered);
+        // ✅ 무조건 배열로 보장
+        onFilterChange(Array.isArray(filtered) ? filtered : []);
     }, [items, filters, onFilterChange]);
 
     useEffect(() => {

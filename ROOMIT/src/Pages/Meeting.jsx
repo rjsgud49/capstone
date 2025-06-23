@@ -110,7 +110,7 @@ const Meeting = () => {
 
 
             <div className="roommate-list">
-                {filteredUsers
+                {Array.isArray(filteredUsers) && filteredUsers
                     .filter(user => user && user.profile)
                     .map(user => (
                         <ProfileCard
