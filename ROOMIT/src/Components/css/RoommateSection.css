@@ -27,3 +27,16 @@
         grid-template-columns: 1fr;
     }
 }
+
+.error-message {
+    margin: 2rem auto;
+    padding: 1rem 2rem;
+    max-width: 600px;
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.5;
+}

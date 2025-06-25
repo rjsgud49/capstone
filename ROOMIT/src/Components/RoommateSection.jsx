@@ -14,7 +14,6 @@ function RoommateSection() {
                 const data = await fetchAllProfiles();
                 console.log('✅ 프로필 목록:', data);
 
-                // ✅ profile이 null이 아니고 name이 "정보없음" 아닌 애들만
                 const filteredUsers = data.filter(user =>
                     user.profile &&
                     user.profile.name !== '정보없음'
@@ -32,47 +31,54 @@ function RoommateSection() {
         fetchData();
     }, []);
 
-    if (loading) return <div>로딩 중...</div>;
-    if (error) return <div>오류 발생: {error}</div>;
-
     const safeUsers = Array.isArray(users) && users.length > 0 ? users : [];
 
     return (
         <section className="roommate-section container">
             <h2 className="section-title">추천 룸메이트</h2>
             <div className="roommate-content">
-                <div className="roommate-grid">
-                    {safeUsers.slice(0, 5).map((user, index) => {
-                        const profile = user.profile;
+                {loading ? (
+                    <div className="loading-message">로딩 중...</div>
+                ) : error ? (
+                    <div className="error-message">
+                        ⚠️ 유저 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
+                    </div>
+                ) : safeUsers.length === 0 ? (
+                    <div className="empty-message">현재 등록된 유저 데이터가 없습니다.</div>
+                ) : (
+                    <div className="roommate-grid">
+                        {safeUsers.slice(0, 5).map((user, index) => {
+                            const profile = user.profile;
 
-                        const avatarSrc = profile.avatar && profile.avatar !== '정보없음' && profile.avatar !== ''
-                            ? profile.avatar
-                            : '/userimg.jpg';
+                            const avatarSrc = profile.avatar && profile.avatar !== '정보없음' && profile.avatar !== ''
+                                ? profile.avatar
+                                : '/userimg.jpg';
 
-                        return (
-                            <RoommateCard
-                                key={user.userId || index}
-                                id={user.userId || index}
-                                name={profile.name}
-                                age={profile.age}
-                                sex={profile.gender}
-                                avatar={avatarSrc}  // ✅ 기본 이미지 적용
-                                mbti={profile.mbti}
-                                job={profile.job}
-                                location={profile.location}
-                                budget={null}  // budget 필드 없음 (null로)
-                                sleep={`${profile.wakeUpTime} ~ ${profile.sleepTime}`}
-                                lifestyle={{
-                                    cleanLevel: profile.cleanLevel,
-                                    noise: profile.noise,
-                                    smoking: profile.smoking,
-                                    drinking: profile.drinking,
-                                    dayNightType: profile.dayNightType
-                                }}
-                            />
-                        );
-                    })}
-                </div>
+                            return (
+                                <RoommateCard
+                                    key={user.userId || index}
+                                    id={user.userId || index}
+                                    name={profile.name}
+                                    age={profile.age}
+                                    sex={profile.gender}
+                                    avatar={avatarSrc}
+                                    mbti={profile.mbti}
+                                    job={profile.job}
+                                    location={profile.location}
+                                    budget={null}
+                                    sleep={`${profile.wakeUpTime} ~ ${profile.sleepTime}`}
+                                    lifestyle={{
+                                        cleanLevel: profile.cleanLevel,
+                                        noise: profile.noise,
+                                        smoking: profile.smoking,
+                                        drinking: profile.drinking,
+                                        dayNightType: profile.dayNightType
+                                    }}
+                                />
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </section>
     );

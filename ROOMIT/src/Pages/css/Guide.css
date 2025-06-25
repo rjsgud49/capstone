@@ -19,7 +19,7 @@
 .guide-header {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
     color: white;
-    padding: 60px 20px;
+    padding: 10px 20px 60px 20px;
     text-align: center;
 }
 

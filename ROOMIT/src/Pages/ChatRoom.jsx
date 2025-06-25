@@ -15,7 +15,7 @@ const ChatRoom = ({ userData }) => {
                 <div className="room-list">
                     <RoomList />
                 </div>
-                <div className="chat-room-container">
+                <div className="chat-room-container"    >
                     {hasRoomId ? (
                         <Chat userData={userData} />
                     ) : (

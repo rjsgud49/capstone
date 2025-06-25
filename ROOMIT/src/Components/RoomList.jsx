@@ -1,46 +1,68 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import './css/RoomList.css';
 
-const RoomList = ({ userData, myId }) => {
+const RoomList = () => {
     const [chatRooms, setChatRooms] = useState([]);
+    const [userId, setUserId] = useState(null);
 
     useEffect(() => {
-        if (!userData || !Array.isArray(userData)) return; // 조건 추가
+        const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (storedUser && storedUser.userId) {
+            setUserId(storedUser.userId);
+        } else {
+            console.warn('유저 ID를 찾을 수 없습니다.');
+        }
+    }, []);
 
-        const savedRooms = userData
-            .filter(user => user.id !== myId)
-            .map(user => {
-                const roomId = [myId, user.id].sort().join('-');
-                const messages = JSON.parse(localStorage.getItem(`chat_${roomId}`)) || [];
-                const lastRead = localStorage.getItem(`read_${roomId}_${myId}`);
+    useEffect(() => {
+        if (!userId) return;
 
-                const unread = messages.filter(msg => {
-                    return msg.senderId !== myId &&
-                        (!lastRead || new Date(msg.timestamp) > new Date(lastRead));
-                }).length;
+        const fetchRooms = async () => {
+            try {
+                const res = await axios.get(`/api/chat/rooms?userId=${encodeURIComponent(userId)}`);
 
-                const lastMsg = messages[messages.length - 1];
+                // ✅ 1단계: 중복 방 제거 (room.id 기준)
+                const uniqueRoomsMap = new Map();
+                res.data.forEach(room => {
+                    uniqueRoomsMap.set(room.id, room);
+                });
+                const uniqueRooms = Array.from(uniqueRoomsMap.values());
 
-                return {
-                    id: user.id,
-                    name: user.name,
-                    avatar: user.avatar || '/vite.svg',
-                    online: user.online || false,
-                    unread,
-                    lastMessage: lastMsg?.content || '',
-                    readtime: lastMsg?.timestamp || null
-                };
-            });
+                // ✅ 2단계: 상대방 찾기 + 가공
+                const processedRooms = uniqueRooms.map(room => {
+                    // members 중 나 아닌 상대방 찾기
+                    const otherMember = room.members.find(member => member.user.userId !== userId);
+                    if (!otherMember) return null; // 상대방 없으면 제외
 
-        setChatRooms(savedRooms);
-    }, [userData, myId]);
+                    const otherUser = otherMember.user;
+                    const lastMessageObj = room.messages[room.messages.length - 1];
+                    const lastMessage = lastMessageObj ? lastMessageObj.content : '메시지가 없습니다.';
+                    const lastTimestamp = lastMessageObj ? lastMessageObj.sentAt : room.createdAt;
 
+                    return {
+                        id: room.id,
+                        otherUser,
+                        lastMessage,
+                        lastTimestamp
+                    };
+                }).filter(room => room !== null); // ✅ null 방 제거
 
-    const formatReadTime = (readtime) => {
-        if (!readtime) return '';
+                setChatRooms(processedRooms);
+
+            } catch (err) {
+                console.error('채팅방 목록 불러오기 실패:', err);
+            }
+        };
+
+        fetchRooms();
+    }, [userId]);
+
+    const formatReadTime = (timestamp) => {
+        if (!timestamp) return '';
         const now = new Date();
-        const readDate = new Date(readtime);
+        const readDate = new Date(timestamp);
         const diff = now - readDate;
         const diffMinutes = Math.floor(diff / 60000);
         const diffHours = Math.floor(diff / 3600000);
@@ -56,26 +78,32 @@ const RoomList = ({ userData, myId }) => {
 
     return (
         <div className="room-list">
-            {chatRooms.map((room) => (
-                <Link to={`/chat/${myId}-${room.id}`} key={room.id} className="room-item">
-                    <div className="room-avatar">
-                        <img src={room.avatar} alt={`${room.name} avatar`} className="room-avatar-image" />
-                        {room.online && <div className="online-indicator"></div>}
-                    </div>
-                    <div className="room-content">
-                        <div className="room-header">
-                            <div className="room-name-container">
-                                <h3 className="room-name">{room.name}</h3>
-                            </div>
-                            <span className="room-time">{formatReadTime(room.readtime)}</span>
+            {chatRooms.length === 0 ? (
+                <p className="no-rooms">채팅방이 없습니다.</p>
+            ) : (
+                chatRooms.map((room) => (
+                    <Link to={`/chat/${room.id}`} key={room.id} className="room-item">
+                        <div className="room-avatar">
+                            {/* <img
+                                src={'/vite.svg'}
+                                alt={`${room.otherUser?.userId} avatar`}
+                                className="room-avatar-image"
+                            /> */}
                         </div>
-                        <p className="room-last-message">{room.lastMessage}</p>
-                    </div>
-                    {room.unread > 0 && (
-                        <div className="unread-badge">{room.unread}</div>
-                    )}
-                </Link>
-            ))}
+                        <div className="room-content">
+                            <div className="room-header">
+                                <div className="room-name-container">
+                                    <h3 className="room-name">
+                                        {room.otherUser?.userId.substring(0, 7)}
+                                    </h3>
+                                </div>
+                                <span className="room-time">{formatReadTime(room.lastTimestamp)}</span>
+                            </div>
+                            <p className="room-last-message">{room.lastMessage}</p>
+                        </div>
+                    </Link>
+                ))
+            )}
         </div>
     );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './css/Header.css';
-import profileImage from '../Data/profile.png';
+import profileImage from '/userimg.jpg';
 
 function Header() {
     const isLoggedIn = !!localStorage.getItem('accessToken');

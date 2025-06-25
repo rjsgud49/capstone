@@ -13,8 +13,9 @@ import Login from './Pages/Login';
 import MeetingDetail from './Pages/MeetingDetail';
 import ChatRoom from './Pages/ChatRoom';
 import MyPages from './Pages/MyPages';
+// import MyDashboardPage from './Pages/MyDashboard.jsx';
 import Guide from './Pages/Guide.jsx';
-
+import MypageEdit from './Pages/MypageEdit.jsx';
 import LivingSpaceData from './Data/LivingSpaceData';
 import AuthGuard from './Auth/AuthGuard';
 import GuestGuard from './Auth/GuestGuard';
@@ -29,6 +30,19 @@ const AppContent = () => {
     const savedUser = localStorage.getItem('currentUser');
     return savedUser ? JSON.parse(savedUser) : null;
   });
+
+  // ✅ accessToken 확인 후 currentUser 복구
+  React.useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    const savedUser = localStorage.getItem('currentUser');
+
+    if (token && !currentUser && savedUser) {
+      console.log('🔄 currentUser 자동 복구');
+      setCurrentUser(JSON.parse(savedUser));
+    }
+  }, [currentUser]);
+
+  console.log('currentUser from App:', currentUser);
 
   return (
     <>
@@ -50,18 +64,18 @@ const AppContent = () => {
           <Route path="/chat/:roomId" element={<AuthGuard><ChatRoom /></AuthGuard>} />
           <Route path="/mypages" element={
             <AuthGuard>
-              <MyPages currentUser={currentUser} setCurrentUser={setCurrentUser} />
+              <MyPages currentUser={currentUser} updateUserData={setCurrentUser} />
             </AuthGuard>
           } />
-          <Route path="/mypage/:id" element={<div>프로필 페이지</div>} />
+          <Route path="/mypageEdit" element={
+            <MypageEdit currentUser={currentUser}  updateUserData={setCurrentUser} />
+          } />
           <Route path="*" element={<Notfound />} />
         </Routes>
       </div>
     </>
   );
 };
-
-
 
 
 const App = () => (

@@ -1,68 +1,55 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import './css/Chat.css';
 
-const Chat = ({ userData = [] }) => {
+const Chat = () => {
     const { roomId } = useParams();
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
+    const [otherUser, ] = useState(null);
     const messagesEndRef = useRef(null);
-    // 샘플 사용자 정보
-
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    const myId = currentUser?.id;
+    const myId = currentUser?.userId;
 
-    const getOtherUserId = (roomId) => {
-        const [id1, id2] = roomId.split('-').map(Number);
-        const otherUserId = id1 === myId ? id2 : id1;
-        return otherUserId;
-    };
-    const otherUserId = parseInt(getOtherUserId(roomId));
 
-    // 상대방 정보 찾기
-    const otherUserInfo = userData.find(user => user.id === otherUserId) || {
-        name: `채팅방 ${roomId}`,
-        avatar: '👤'
+    const fetchMessages = async () => {
+        try {
+            const res = await axios.get(`/api/chat/room/${roomId}/messages`);
+            setMessages(res.data || []);
+        } catch (err) {
+            console.error('채팅 메시지 불러오기 실패:', err);
+        }
     };
+
+
     useEffect(() => {
-        // 로컬 스토리지에서 메시지 불러오기
-        const saved = localStorage.getItem(`chat_${roomId}`);
-        const parsedMessages = saved ? JSON.parse(saved) : [];
-        setMessages(parsedMessages);
+        fetchMessages();
     }, [roomId]);
 
-
-    // 메시지가 추가될 때마다 스크롤 맨 아래로 이동
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
-
-
-    // Chat.jsx 안 useEffect 추가
-    useEffect(() => {
-        const now = new Date().toISOString();
-        localStorage.setItem(`read_${roomId}_${myId}`, now);
-    }, [roomId, myId]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    const sendMessage = () => {
+    const sendMessage = async () => {
         if (input.trim() === '') return;
 
-        const newMessage = {
-            senderId: myId,
-            content: input,
-            timestamp: new Date().toISOString(),
-        };
-
-
-        const updated = [...messages, newMessage];
-        setMessages(updated);
-        localStorage.setItem(`chat_${roomId}`, JSON.stringify(updated));
-        setInput('');
+        try {
+            await axios.post(`/api/chat/room/${roomId}/message`,
+                { content: input },
+                { params: { userId: myId } }
+            );
+            setInput('');
+            await fetchMessages();
+        } catch (err) {
+            console.error('메시지 전송 실패:', err.response?.data || err);
+        }
     };
+
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
@@ -78,11 +65,10 @@ const Chat = ({ userData = [] }) => {
     return (
         <div className="chat-room">
             <div className="chat-header" style={{ alignItems: 'flex-start' }}>
-
                 <h3 className="other-user-name">
                     <img
-                        src={otherUserInfo.avatar}
-                        alt={`${otherUserInfo.name}의 아바타`}
+                        src={otherUser?.avatar || '/vite.svg'}
+                        alt={`${otherUser?.name}의 아바타`}
                         style={{
                             width: '32px',
                             height: '32px',
@@ -90,9 +76,8 @@ const Chat = ({ userData = [] }) => {
                             marginRight: '8px',
                             marginTop: '4px'
                         }}
-
                     />
-                    {otherUserInfo.name}
+                    {otherUser?.name || `채팅방 ${roomId}`}
                 </h3>
 
                 <div className="chat-actions">
@@ -113,7 +98,7 @@ const Chat = ({ userData = [] }) => {
                             className={`chat-message ${msg.senderId === myId ? 'right' : 'left'}`}
                         >
                             <div className="bubble">{msg.content}</div>
-                            <small>{formatTime(msg.timestamp)}</small>
+                            <small>{formatTime(msg.sentAt)}</small>
                         </div>
                     ))
                 )}

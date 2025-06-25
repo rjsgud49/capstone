@@ -6,6 +6,8 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import '../Pages/css/MeetingDetail.css';
 import { fetchAllProfiles } from '../services/user';
+import axios from 'axios';
+import Loading from './Loading';
 
 import useradd from '/src/assets/useradd.svg';
 import deluser from '/src/assets/deluser.svg';
@@ -13,7 +15,6 @@ import deluser from '/src/assets/deluser.svg';
 const UserProfile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const currentUserId = "rjsgud49"; // 현재 로그인된 유저 ID
     const [user, setUser] = useState(null);
     const [isFavorited, setIsFavorited] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -71,9 +72,12 @@ const UserProfile = () => {
         loadUser();
     }, [id]);
 
-    if (loading) return <div>로딩 중...</div>;
+    if (loading) return <Loading />;
     if (error) return <div>{error}</div>;
     if (!user) return null;
+
+    const currentUserId = JSON.parse(localStorage.getItem('currentUser'))?.userId;
+    const isOwnProfile = currentUserId === user.id || currentUserId === user.userId;
 
     const lifestyleCategories = [
         {
@@ -114,10 +118,25 @@ const UserProfile = () => {
         }
     ];
 
-    const handleChatClick = () => {
-        const sortedIds = [currentUserId, user.id].sort();
-        const roomId = `${sortedIds[0]}-${sortedIds[1]}`;
-        navigate(`/chat/${roomId}`);
+    const handleChatClick = async () => {
+        if (!currentUserId) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
+
+        try {
+            const res = await axios.post('/api/chat/room', null, {
+                params: {
+                    userId: currentUserId,
+                    targetUserId: user.id
+                }
+            });
+            const roomId = res.data.id;
+            navigate(`/chat/${roomId}`);
+        } catch (err) {
+            console.error('채팅방 생성 실패:', err.response?.data || err);
+            alert('채팅방 생성에 실패했습니다.');
+        }
     };
 
     const handleFavoriteClick = () => {
@@ -234,10 +253,13 @@ const UserProfile = () => {
                     <span>{isFavorited ? '즐겨찾기 제거' : '즐겨찾기'}</span>
                 </button>
 
-                <button className="chat-button" onClick={handleChatClick}>
-                    <MessageCircle size={40} />
-                    채팅하기
-                </button>
+                {/* 자기 자신의 프로필이 아닐 때만 채팅하기 버튼 표시 */}
+                {!isOwnProfile && (
+                    <button className="chat-button" onClick={handleChatClick}>
+                        <MessageCircle size={40} />
+                        채팅하기
+                    </button>
+                )}
             </div>
         </div>
     );
