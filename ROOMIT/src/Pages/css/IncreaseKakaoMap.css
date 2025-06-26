@@ -1,0 +1,33 @@
+.increaseKakaoMap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+}
+
+.increaseKakaoMap #map {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.increaseKakaoMap button {
+  background-color: #4a6cf7;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  width: 90px;
+  padding: 8px 20px;
+  margin-left: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 100;
+}

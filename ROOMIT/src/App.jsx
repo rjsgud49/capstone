@@ -13,7 +13,8 @@ import Login from './Pages/Login';
 import MeetingDetail from './Pages/MeetingDetail';
 import ChatRoom from './Pages/ChatRoom';
 import MyPages from './Pages/MyPages';
-// import MyDashboardPage from './Pages/MyDashboard.jsx';
+import LivingSpaceDetail from './Pages/LivingSpaceDetail';
+import IncreaseKakaoMap from './Components/IncreaseKakaoMap';
 import Guide from './Pages/Guide.jsx';
 import MypageEdit from './Pages/MypageEdit.jsx';
 import LivingSpaceData from './Data/LivingSpaceData';
@@ -58,7 +59,13 @@ const AppContent = () => {
           } />
           <Route path="/meeting" element={<Meeting />} />
           <Route path="/meeting/:id" element={<AuthGuard><MeetingDetail /></AuthGuard>} />
-          <Route path="/housing" element={<LivingSpace LivingSpaceData={LivingSpaceData} />} />
+          <Route path="/housing" element={<LivingSpace />} />
+          <Route path="/housing/:id" element={<LivingSpaceDetail />} />
+          {/* <Route path="/housing/listing" element={<LivingSpaceListing />} /> */}
+          <Route
+            path="/housing/:id/map"
+            element={<IncreaseKakaoMap LivingSpaceData={LivingSpaceData} />}
+          />
           <Route path="/chat" element={<AuthGuard><ChatRoom /></AuthGuard>} />
           <Route path="/Guide" element={<Guide />} />
           <Route path="/chat/:roomId" element={<AuthGuard><ChatRoom /></AuthGuard>} />
