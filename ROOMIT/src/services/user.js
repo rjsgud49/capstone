@@ -61,6 +61,8 @@ export const submitProfile = async (profileData) => {
 export const submitInterests = async (userId, interests) => {
     try {
         const token = getAccessToken();
+
+        console.log('📦 가져온 토큰:', token);
         if (!token) {
             throw new Error('로그인이 필요합니다. accessToken이 없습니다.');
         }

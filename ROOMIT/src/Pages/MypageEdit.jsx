@@ -64,6 +64,9 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const fileInputRef = useRef(null);
+    const [interestsInput, setInterestsInput] = useState('');
+
+
 
     useEffect(() => {
         let isMounted = true;
@@ -268,7 +271,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                 gender: formData.gender || '',
                 location: formData.location || '',
                 job: formData.job || '',
-                introduction: formData.introduction || '',
+                introduction: formData.introduction || '',  // ✅ 여기 추가
                 idealRoommate: formData.idealRoommate || '',
                 mbti: formData.mbti || '',
                 dayNightType: formData.lifestyle?.dayNightPreference || '',
@@ -280,6 +283,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                 wakeUpTime: formData.lifestyle?.wakeUpTime || '',
                 sleepTime: formData.lifestyle?.sleepTime || '',
             };
+
 
             console.log('===== ✅ 프로필 저장 =====');
             await submitProfile(profileData);
@@ -322,6 +326,12 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
             updateUserData({ ...formData, matching: !newMatchingState });
         }
     };
+    useEffect(() => {
+        setInterestsInput(
+            Array.isArray(formData.interests) ? formData.interests.join(', ') : ''
+        );
+    }, [formData.interests]);
+
 
     const lifestyleCategories = [
         {
@@ -498,18 +508,40 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                     <h2>관심사</h2>
                     <textarea
                         name="interests"
-                        value={Array.isArray(formData.interests) ? formData.interests.join(', ') : ''}
-                        onChange={(e) => {
-                            const interestsArray = e.target.value
+                        value={interestsInput}
+                        onChange={(e) => setInterestsInput(e.target.value)} // 실시간으로 split 하지 않음
+                        onBlur={() => {
+                            const interestsArray = interestsInput
                                 .split(',')
                                 .map((item) => item.trim())
                                 .filter((item) => item.length > 0);
-                            setFormData({ ...formData, interests: interestsArray });
+
+                            setFormData((prev) => {
+                                const updated = { ...prev, interests: interestsArray };
+
+                                // 🔥 로컬스토리지 반영
+                                const storedUser = localStorage.getItem('currentUser');
+                                if (storedUser) {
+                                    const parsed = JSON.parse(storedUser);
+                                    const updatedUser = {
+                                        ...parsed,
+                                        profile: {
+                                            ...(parsed.profile || {}),
+                                            interests: interestsArray,
+                                        },
+                                    };
+                                    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                                }
+
+                                return updated;
+                            });
                         }}
+
                         className="textarea-field"
                         rows={2}
                         placeholder="게임, 운동, 산책 이런 식으로 쉼표(,)로 구분해 주세요"
                     />
+
                 </section>
 
 

@@ -79,7 +79,7 @@ const RoomList = () => {
     return (
         <div className="room-list">
             {chatRooms.length === 0 ? (
-                <p className="no-rooms">채팅방이 없습니다.</p>
+                <p className="no-rooms">채팅방이 없거나 불러오는 중입니다.</p>
             ) : (
                 chatRooms.map((room) => (
                     <Link to={`/chat/${room.id}`} key={room.id} className="room-item">

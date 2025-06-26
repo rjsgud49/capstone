@@ -7,6 +7,7 @@ import '../Pages/css/Meeting.css';
 import Loading from './Loading';
 import RetryPage from './RetryPage';
 
+// ✅ 평탄화된 데이터에 맞춘 필터 경로 사용
 const filters = [
     {
         category: '나이대',
@@ -45,17 +46,17 @@ const filters = [
     }
 ];
 
+// ✅ 서버 응답 유저 배열을 평탄화
 const flattenUserProfiles = (users) => {
     return users
         .filter(user => user && user.profile)
         .map(user => ({
-            id: user.userId,                  // ✅ 상세 페이지용 id
-            userId: user.userId,              // ✅ 백엔드 호출 시 필요
+            id: user.userId,                  // 상세 페이지용
+            userId: user.userId,              // 서버 전송용
             ...user.profile,
             interests: user.interests || [],
         }));
 };
-
 
 const Meeting = () => {
     const [users, setUsers] = useState([]);
@@ -69,11 +70,12 @@ const Meeting = () => {
         setError(null);
         try {
             const data = await fetchAllProfiles();
-            console.log("✅ 서버에서 받은 전체 유저 프로필:", data);
-            setUsers(flattenUserProfiles(data)); // 여기서 flatten
-            setFilteredUsers(flattenUserProfiles(data));
+            console.log('✅ 전체 유저 데이터:', data);
+            const flatData = flattenUserProfiles(data);
+            setUsers(flatData);
+            setFilteredUsers(flatData);
         } catch (err) {
-            console.error('❌ 데이터를 가져오는 데 실패했습니다:', err);
+            console.error('❌ 프로필 불러오기 실패:', err);
             setError('데이터를 불러오는 데 실패했습니다.');
         } finally {
             setIsLoading(false);
@@ -86,16 +88,11 @@ const Meeting = () => {
 
     const togglePanel = () => {
         setOpen(prev => !prev);
-        console.log("📂 패널 토글 상태:", !open);
+        console.log('📂 필터 패널 상태:', !open);
     };
 
-    if (isLoading || users.length === 0) {
-        return <Loading />;
-    }
-
-    if (error) {
-        return <RetryPage errorMessage={error} onRetry={loadProfiles} />;
-    }
+    if (isLoading) return <Loading />;
+    if (error) return <RetryPage errorMessage={error} onRetry={loadProfiles} />;
 
     return (
         <div className="roommates-list">
@@ -112,16 +109,16 @@ const Meeting = () => {
                 open={open}
                 setOpen={setOpen}
                 filters={filters}
-                items={users}   
+                items={users}
                 onFilterChange={setFilteredUsers}
                 showFilterButton={false}
             />
 
             <div className="roommate-list">
-                {Array.isArray(filteredUsers) && filteredUsers.map(user => (
+                {filteredUsers.map(user => (
                     <ProfileCard
                         key={user.userId}
-                        userData={user}   // flat 구조 그대로 사용!
+                        userData={user}   // ✅ id, userId 포함된 평탄 구조
                     />
                 ))}
             </div>
