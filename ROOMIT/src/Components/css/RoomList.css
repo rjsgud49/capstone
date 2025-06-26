@@ -34,7 +34,12 @@
 .room-item:hover {
     background-color: #f3f4f6;
 }
-
+.room-avatar-image{
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    object-fit: cover;
+}
 .room-avatar {
     width: 2.5rem;
     height: 2.5rem;
