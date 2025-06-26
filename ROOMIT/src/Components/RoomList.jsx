@@ -84,11 +84,11 @@ const RoomList = () => {
                 chatRooms.map((room) => (
                     <Link to={`/chat/${room.id}`} key={room.id} className="room-item">
                         <div className="room-avatar">
-                            {/* <img
-                                src={'/vite.svg'}
+                            <img
+                                src={'/userimg.jpg'} // 기본 아바타 이미지
                                 alt={`${room.otherUser?.userId} avatar`}
                                 className="room-avatar-image"
-                            /> */}
+                            />
                         </div>
                         <div className="room-content">
                             <div className="room-header">
