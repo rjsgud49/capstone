@@ -24,8 +24,15 @@ const Chat = () => {
 
 
     useEffect(() => {
-        fetchMessages();
+        fetchMessages(); // 초기 1회 호출
+
+        const interval = setInterval(() => {
+            fetchMessages();
+        }, 3000); // 3초마다 메시지 새로고침
+
+        return () => clearInterval(interval); // 언마운트 시 정리
     }, [roomId]);
+
 
     useEffect(() => {
         scrollToBottom();
