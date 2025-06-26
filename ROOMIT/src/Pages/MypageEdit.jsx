@@ -392,7 +392,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
             {/* <Header currentUser={currentUser} setCurrentUser={setCurrentUser} /> */}
             <div className="meeting-user-detail">
                 <div style={{ textAlign: 'right', marginBottom: '10px' }}>
-                    <Link to="/mypages" className="btn-edit-profile">
+                    <Link to="/Mypages" className="btn-edit-profile">
                         프로필 보기
                     </Link>
                 </div>

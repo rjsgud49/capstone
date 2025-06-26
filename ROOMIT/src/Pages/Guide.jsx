@@ -125,27 +125,27 @@ const steps = [
 
         <div className="extra-checklist">
           <h4>📌 계약 전 체크리스트</h4>
-          <ul>
-            <li>• 등기부등본 확인 (임대인이 실제 집주인인지 확인)</li>
-            <li>• 확정일자 받기 (보증금 보호용)</li>
-            <li>• 전입신고 하기</li>
+          <ul className="no-bullet">
+            <li>등기부등본 확인 (임대인이 실제 집주인인지 확인)</li>
+            <li>확정일자 받기 (보증금 보호용)</li>
+            <li>전입신고 하기</li>
           </ul>
         </div>
 
         <div className="extra-checklist">
           <h4>💰 보증금 반환 시 유의사항</h4>
-          <ul>
-            <li>• 퇴실 청소 여부 확인</li>
-            <li>• 공과금 정산 완료 확인</li>
-            <li>• 보증금 반환 일정 및 방법 사전 합의</li>
+          <ul className="no-bullet">
+            <li>퇴실 청소 여부 확인</li>
+            <li>공과금 정산 완료 확인</li>
+            <li>보증금 반환 일정 및 방법 사전 합의</li>
           </ul>
         </div>
 
         <div className="extra-checklist">
           <h4>🏢 중개사 수수료 안내</h4>
-          <ul>
-            <li>• 월세 기준 통상 0.3~0.5개월치</li>
-            <li>• 사전 협의 및 영수증 요청하기</li>
+          <ul className="no-bullet">
+            <li>월세 기준 통상 0.3~0.5개월치</li>
+            <li>사전 협의 및 영수증 요청하기</li>
           </ul>
         </div>
 

@@ -23,6 +23,12 @@
     text-align: center;
 }
 
+.no-bullet {
+    list-style: none;
+    padding-left: 0;
+    /* 필요 시 들여쓰기 없앰 */
+}
+
 .guide-title {
     font-size: 3rem;
     font-weight: 800;
@@ -236,5 +242,4 @@
 
     .step-content {
         margin-left: 70px;
-    }
-}
+    }}

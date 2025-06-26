@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { fetchAllProfiles } from '../services/user';
 import ProfileCard from '../Components/User_Profile_Card';
-// import Header from '../Components/Header';
 import FilterPanel from '../Components/Filter';
 import { Funnel } from 'lucide-react';
 import '../Pages/css/Meeting.css';
@@ -11,7 +10,7 @@ import RetryPage from './RetryPage';
 const filters = [
     {
         category: '나이대',
-        path: 'profile.age',
+        path: 'age',
         options: ['상관없음', '20-25', '26-30', '31-35'],
         filterFn: (age, selectedRange) => {
             if (typeof age !== 'number') return false;
@@ -21,30 +20,41 @@ const filters = [
     },
     {
         category: '흡연',
-        path: 'profile.smoking',
+        path: 'smoking',
         options: ['상관없음', '비흡연', '흡연']
     },
     {
         category: '활동시간',
-        path: 'profile.dayNightType',
+        path: 'dayNightType',
         options: ['상관없음', '아침형', '저녁형', '밤']
     },
     {
         category: '음주',
-        path: 'profile.drinking',
+        path: 'drinking',
         options: ['상관없음', '음주', '가끔', '비음주', '안 함']
     },
     {
         category: '청결 수준',
-        path: 'profile.cleanLevel',
+        path: 'cleanLevel',
         options: ['상관없음', '낮음', '보통', '높음', '매우 높음']
     },
     {
         category: '소음 민감도',
-        path: 'profile.noise',
+        path: 'noise',
         options: ['상관없음', '낮음', '보통', '높음', '매우 민감']
     }
 ];
+
+const flattenUserProfiles = (users) => {
+    return users
+        .filter(user => user && user.profile)
+        .map(user => ({
+            id: user.userId,                  // ✅ 상세 페이지용 id
+            userId: user.userId,              // ✅ 백엔드 호출 시 필요
+            ...user.profile,
+            interests: user.interests || [],
+        }));
+};
 
 
 const Meeting = () => {
@@ -60,8 +70,8 @@ const Meeting = () => {
         try {
             const data = await fetchAllProfiles();
             console.log("✅ 서버에서 받은 전체 유저 프로필:", data);
-            setUsers(data);
-            setFilteredUsers(data);
+            setUsers(flattenUserProfiles(data)); // 여기서 flatten
+            setFilteredUsers(flattenUserProfiles(data));
         } catch (err) {
             console.error('❌ 데이터를 가져오는 데 실패했습니다:', err);
             setError('데이터를 불러오는 데 실패했습니다.');
@@ -87,10 +97,8 @@ const Meeting = () => {
         return <RetryPage errorMessage={error} onRetry={loadProfiles} />;
     }
 
-
     return (
         <div className="roommates-list">
-            {/* <Header /> */}
             <div className="meeting-header">
                 <h1>룸메이트 매칭</h1>
                 <h2>룸메이트를 찾아보세요!</h2>
@@ -104,23 +112,19 @@ const Meeting = () => {
                 open={open}
                 setOpen={setOpen}
                 filters={filters}
-                items={users}         // ✅ 수정: items 라고 줘야 정상 동작
+                items={users}   
                 onFilterChange={setFilteredUsers}
                 showFilterButton={false}
             />
 
-
             <div className="roommate-list">
-                {Array.isArray(filteredUsers) && filteredUsers
-                    .filter(user => user && user.profile)
-                    .map(user => (
-                        <ProfileCard
-                            key={user.userId}
-                            userData={{ ...user.profile, id: user.userId }}
-                        />
-                    ))}
+                {Array.isArray(filteredUsers) && filteredUsers.map(user => (
+                    <ProfileCard
+                        key={user.userId}
+                        userData={user}   // flat 구조 그대로 사용!
+                    />
+                ))}
             </div>
-
         </div>
     );
 };

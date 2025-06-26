@@ -374,3 +374,26 @@
         height: 18px;
     }
 }
+
+.btn-edit-profile {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    /* 녹색 배경 */
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-edit-profile:hover {
+    background-color: #5cc961;
+    transform: translateY(-2px);
+}
+
+.btn-edit-profile:active {
+    transform: translateY(0);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
