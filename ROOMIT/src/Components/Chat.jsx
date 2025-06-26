@@ -89,7 +89,7 @@ const Chat = () => {
             <div className="chat-header" style={{ alignItems: 'flex-start' }}>
                 <h3 className="other-user-name">
                     <img
-                        src="/vite.svg"
+                        src="/userimg.jpg" // 기본 아바타 이미지
                         alt={`${otherUserId || '상대방'}의 아바타`}
                         style={{
                             width: '32px',
