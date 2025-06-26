@@ -21,7 +21,7 @@ export const fetchProfile = async (userId) => {
         const errorMessage = error.response
             ? `서버 에러: ${error.response.status} - ${error.response.data.message || '알 수 없는 에러'}`
             : error.message || '네트워크 에러가 발생했습니다.';
-        console.error('❌ 프로필 데이터를 가져오는 데 실패했습니다:', errorMessage);
+        //console.error('❌ 프로필 데이터를 가져오는 데 실패했습니다:', errorMessage);
         throw new Error(errorMessage);
     }
 };
@@ -36,9 +36,9 @@ export const submitProfile = async (profileData) => {
         if (!token) {
             throw new Error('로그인이 필요합니다. accessToken이 없습니다.');
         }
-        console.log('Bearer token:', getAccessToken());
+        //console.log('Bearer token:', getAccessToken());
 
-        console.log('🔍 보낼 프로필 데이터:', profileData);
+        //console.log('🔍 보낼 프로필 데이터:', profileData);
 
         const response = await api.post('/secure/profile', profileData, {
             headers: {
@@ -47,13 +47,13 @@ export const submitProfile = async (profileData) => {
             },
         });
 
-        console.log('✅ 프로필 등록/수정 성공:', response.data);
+        //console.log('✅ 프로필 등록/수정 성공:', response.data);
         return response.data;
     } catch (error) {
         const errorMessage = error.response
             ? `서버 에러: ${error.response.status} - ${error.response.data.message || '알 수 없는 에러'}`
             : error.message || '네트워크 에러가 발생했습니다.';
-        console.error('❌ 프로필 등록/수정 실패:', errorMessage);
+        //console.error('❌ 프로필 등록/수정 실패:', errorMessage);
         throw new Error(errorMessage);
     }
 };
@@ -62,7 +62,7 @@ export const submitInterests = async (userId, interests) => {
     try {
         const token = getAccessToken();
 
-        console.log('📦 가져온 토큰:', token);
+        // console.log('📦 가져온 토큰:', token);
         if (!token) {
             throw new Error('로그인이 필요합니다. accessToken이 없습니다.');
         }
@@ -72,7 +72,7 @@ export const submitInterests = async (userId, interests) => {
             interests,
         };
 
-        console.log('🔍 보낼 관심사 데이터:', payload);
+        // console.log('🔍 보낼 관심사 데이터:', payload);
 
         const response = await api.post('/secure/interests', payload, {
             headers: {
@@ -81,7 +81,7 @@ export const submitInterests = async (userId, interests) => {
             },
         });
 
-        console.log('✅ 관심사 저장 성공:', response.data);
+        // console.log('✅ 관심사 저장 성공:', response.data);
         return response.data;
     } catch (error) {
         const errorMessage = error.response
@@ -95,13 +95,13 @@ export const submitInterests = async (userId, interests) => {
 export const updateMatching = async (userId, matching) => {
     try {
         const response = await api.patch(`/profile/${userId}/matching`, { matching });
-        console.log('✅ 매칭 상태 업데이트 성공:', response.data);
+        //console.log('✅ 매칭 상태 업데이트 성공:', response.data);
         return response.data;
     } catch (error) {
         const errorMessage = error.response
             ? `서버 에러: ${error.response.status} - ${error.response.data.message || '알 수 없는 에러'}`
             : error.message || '네트워크 에러가 발생했습니다.';
-        console.error('❌ 매칭 상태 업데이트 실패:', errorMessage);
+        //console.error('❌ 매칭 상태 업데이트 실패:', errorMessage);
         throw new Error(errorMessage);
     }
 };
@@ -117,13 +117,13 @@ export const uploadAvatar = async (file) => {
             },
         });
 
-        console.log('✅ 아바타 업로드 성공:', response.data);
+        //console.log('✅ 아바타 업로드 성공:', response.data);
         return response.data.url;
     } catch (error) {
         const errorMessage = error.response
             ? `서버 에러: ${error.response.status} - ${error.response.data.message || '알 수 없는 에러'}`
             : error.message || '네트워크 에러가 발생했습니다.';
-        console.error('❌ 아바타 업로드 실패:', errorMessage);
+        //console.error('❌ 아바타 업로드 실패:', errorMessage);
         throw new Error(errorMessage);
     }
 };
