@@ -87,7 +87,7 @@ const RoomList = () => {
                             <img
                                 src={'/userimg.jpg'} // 기본 아바타 이미지
                                 alt={`${room.otherUser?.userId} avatar`}
-                                className="room-avatar-image"
+                                className="room-avatar-imagee"
                             />
                         </div>
                         <div className="room-content">
