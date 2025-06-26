@@ -7,8 +7,9 @@ const Chat = () => {
     const { roomId } = useParams();
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
-    const [otherUser, setOtherUser] = useState(null);
+    const [otherUserId, setOtherUserId] = useState(null);
     const messagesEndRef = useRef(null);
+
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const myId = currentUser?.userId;
 
@@ -22,23 +23,22 @@ const Chat = () => {
         }
     };
 
-    // ✅ 상대 유저 정보 불러오기
-    const fetchOtherUser = async () => {
+    // ✅ 상대방 userId 불러오기
+    const fetchOtherUserId = async () => {
         try {
             const res = await axios.get(`/api/chat/room/${roomId}`);
-            const participants = res.data?.participants || [];
-
-            const other = participants.find((user) => user.userId !== myId);
-            if (other) setOtherUser(other);
+            const members = res.data?.members || [];
+            const other = members.find(m => m.user.userId !== myId);
+            if (other) setOtherUserId(other.user.userId);
         } catch (err) {
             console.error('상대방 정보 불러오기 실패:', err);
         }
     };
 
-    // ✅ 폴링 & 초기 데이터 로드
+    // ✅ 초기 로딩 및 폴링
     useEffect(() => {
         fetchMessages();
-        fetchOtherUser();
+        fetchOtherUserId();
 
         const interval = setInterval(() => {
             fetchMessages();
@@ -60,7 +60,8 @@ const Chat = () => {
         if (input.trim() === '') return;
 
         try {
-            await axios.post(`/api/chat/room/${roomId}/message`,
+            await axios.post(
+                `/api/chat/room/${roomId}/message`,
                 { content: input },
                 { params: { userId: myId } }
             );
@@ -85,8 +86,8 @@ const Chat = () => {
             <div className="chat-header" style={{ alignItems: 'flex-start' }}>
                 <h3 className="other-user-name">
                     <img
-                        src={otherUser?.avatar || '/vite.svg'}
-                        alt={`${otherUser?.userId || '상대방'}의 아바타`}
+                        src="/vite.svg"
+                        alt={`${otherUserId || '상대방'} 아바타`}
                         style={{
                             width: '32px',
                             height: '32px',
@@ -95,7 +96,7 @@ const Chat = () => {
                             marginTop: '4px'
                         }}
                     />
-                    {otherUser?.userId || `채팅방 ${roomId}`}
+                    {otherUserId || `채팅방 ${roomId}`}
                 </h3>
                 <div className="chat-actions">
                     <button aria-label="정보">ℹ️</button>
@@ -130,9 +131,7 @@ const Chat = () => {
                         onKeyPress={handleKeyPress}
                         placeholder="메시지를 입력하세요"
                     />
-                    <button onClick={sendMessage} aria-label="전송">
-                        ➤
-                    </button>
+                    <button onClick={sendMessage} aria-label="전송">➤</button>
                 </div>
             </div>
         </div>
