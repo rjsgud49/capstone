@@ -38,12 +38,12 @@ const AppContent = () => {
     const savedUser = localStorage.getItem('currentUser');
 
     if (token && !currentUser && savedUser) {
-      console.log('🔄 currentUser 자동 복구');
+      //console.log('🔄 currentUser 자동 복구');
       setCurrentUser(JSON.parse(savedUser));
     }
   }, [currentUser]);
 
-  console.log('currentUser from App:', currentUser);
+  //console.log('currentUser from App:', currentUser);
 
   return (
     <>

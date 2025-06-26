@@ -12,7 +12,7 @@ function RoommateSection() {
         const fetchData = async () => {
             try {
                 const data = await fetchAllProfiles();
-                console.log('✅ 프로필 목록:', data);
+                //console.log('✅ 프로필 목록:', data);/
 
                 const filteredUsers = data.filter(user =>
                     user.profile &&
@@ -21,7 +21,7 @@ function RoommateSection() {
 
                 setUsers(filteredUsers);
             } catch (err) {
-                console.error('❌ 프로필 가져오기 실패:', err.message);
+                //console.error('❌ 프로필 가져오기 실패:', err.message);
                 setError(err.message);
             } finally {
                 setLoading(false);

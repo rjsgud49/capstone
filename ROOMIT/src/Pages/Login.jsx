@@ -52,13 +52,13 @@
                     password: loginPassword
                 });
 
-                console.log("✅ loginAPI 응답 확인:", response);
+                // console.log("✅ loginAPI 응답 확인:", response);
 
                 const { token, userId } = response;
 
                 const profile = await fetchProfile(userId);
 
-                console.log("✅ fetchProfile 응답:", profile);
+                // console.log("✅ fetchProfile 응답:", profile);
 
                 // ✅ 수정 → profile 자체 저장
                 localStorage.setItem('accessToken', token);
