@@ -15,7 +15,7 @@ jobs:
         with:
           host: 34.64.198.39
           username: ubuntu
-          key: ${{ secrets.GCP_PRIVATE_KEY }}
+          key: SHA256:R3gMew63jac+Ge5rxsLWi6uQlH/ReTCkTW/NDliPG7M
           script: |
             cd ~/capstone
             git pull origin main
