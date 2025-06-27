@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Pull latest code on GCP VM
+      - name: Pull latest code and deploy to nginx
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: 34.64.198.39
@@ -21,5 +21,5 @@ jobs:
             git pull origin main
             npm install
             npm run build
-            pm2 restart roomit || pm2 start npm --name "roomit" -- start
-            pm2 save
+            sudo rm -rf /var/www/html/*
+            sudo cp -r dist/* /var/www/html/
