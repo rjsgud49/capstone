@@ -7,6 +7,7 @@ import '../Pages/css/MeetingDetail.css';
 import { fetchAllProfiles } from '../services/user';
 import Loading from './Loading';
 import { Link } from 'react-router-dom';
+import RetryPage from './RetryPage';
 const UserProfile = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -87,7 +88,7 @@ const UserProfile = () => {
     }, []);
 
     if (loading) return <Loading />;
-    if (error) return <div>{error}</div>;
+    if (error) return <div><RetryPage/></div>;
     if (!user) return null;
 
     const lifestyleCategories = [
