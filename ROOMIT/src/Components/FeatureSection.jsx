@@ -8,7 +8,7 @@ function FeatureSection() {
         {           
             id: 1,
             icon: '🧩',
-            title: '성향 기반 매칭',
+            title: '성gidgidgid 기반 매칭',
             description: 'MBTI, 생활패턴, 취침시간 등을 수집집해 나와 잘 맞는 룸메이트를 만날수 있습니다.'
         },
         {
