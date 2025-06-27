@@ -1,0 +1,21 @@
+name: Auto Git Pull to GCP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  git-pull:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull latest code on GCP VM
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: 34.64.198.39
+          username: ubuntu
+          key: ${{ secrets.GCP_PRIVATE_KEY }}
+          script: |
+            cd ~/capstone
+            git pull origin main
