@@ -14,8 +14,8 @@ jobs:
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: 34.64.198.39
-          username: ubuntu
-          key: SHA256:R3gMew63jac+Ge5rxsLWi6uQlH/ReTCkTW/NDliPG7M
+          username: qkrrjsgud49
+          key: ${{ secrets.GCP_PRIVATE_KEY }}
           script: |
-            cd ~/capstone
+            cd /home/qkrrjsgud49/capstone
             git pull origin main
