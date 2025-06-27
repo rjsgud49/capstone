@@ -17,7 +17,7 @@ function Header() {
         <header className="header">
             <div className="logo">
                 <img src="/ROMMITlogo.svg" alt="로고" className="logo-image" width="40px" />
-                ROOMIT
+                ROOMIT테스트
             </div>
 
             <nav className="nav">
