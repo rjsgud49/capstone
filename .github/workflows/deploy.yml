@@ -17,5 +17,8 @@ jobs:
           username: qkrrjsgud49
           key: ${{ secrets.GCP_PRIVATE_KEY }}
           script: |
-            cd /home/qkrrjsgud49/capstone
+            cd ~/capstone/ROOMIT
             git pull origin main
+            npm install
+            npm run build
+            pm2 restart all || pm2 start npm --name "roomit" -- start
