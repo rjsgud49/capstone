@@ -17,9 +17,23 @@ jobs:
           username: qkrrjsgud49
           key: ${{ secrets.GCP_PRIVATE_KEY }}
           script: |
+            set -e  # 에러 발생 시 중단되게 설정
             cd ~/capstone/ROOMIT
+
+            echo "📦 Git pull"
             git pull origin main
+
+            echo "📦 Installing dependencies"
             npm install
+
+            echo "⚙️ Building project..."
             npm run build
+
+            echo "🚚 Deploying build files..."
             sudo rm -rf /var/www/html/*
             sudo cp -r dist/* /var/www/html/
+
+            echo "🔁 Restarting nginx..."
+            sudo nginx -t && sudo systemctl restart nginx
+
+            echo "✅ Deploy complete!"
