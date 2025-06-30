@@ -1,9 +1,13 @@
-.livingSpace-item .image-container {
+/* .livingSpace-item .image-container {
   flex-shrink: 0;
   height: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
+} */
+
+.livingSpace-item:nth-child(-1) {
+  justify-content: center;
 }
 
 .livingSpace-item .info {
@@ -11,4 +15,31 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.livingSpace-item .info b {
+  font-size: 1.3rem;
+}
+
+.livingSpace-item .btn-container {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-container .btn-detail {
+  width: 280px;
+  padding: 10px 0;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: auto;
+}
+
+.btn-container .btn-detail:hover {
+  background-color: #3562d4;
 }

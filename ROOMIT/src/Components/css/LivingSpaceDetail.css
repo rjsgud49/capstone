@@ -8,7 +8,7 @@
   margin-top: 50px;
   padding-bottom: 20px;
   grid-template-areas:
-    "card1 card2"
+    "card2 card2"
     "card1 card3";
 }
 
@@ -30,7 +30,7 @@
 
 .livingSpaceDetail-item {
   width: 450px;
-  height: 600px;
+  height: auto;
   font-size: 24px;
   grid-area: card1;
   /* padding: 20px; */
@@ -70,9 +70,10 @@
 
 .livingSpace-map {
   width: 100%;
-  height: 300px;
+  height: 320px;
   padding: 0;
   position: relative;
+  grid-area: card2;
 }
 .livingSpace-map button {
   background-color: #4a6cf7;
@@ -99,7 +100,7 @@
 }
 .livingSpace-feature {
   width: 600px;
-  height: 270px;
+  height: 100%;
   grid-area: card3;
 }
 

@@ -8,7 +8,7 @@ function HousingCard({ name, icon, type, price, features }) {
             <div className="housing-icon-wrapper">
                 <span className="housing-icon" role="img" aria-label="Housing">
                     {icon}
-                </span>
+                </span> 
             </div>
             <div className="housing-details">
                 <h3 className="housing-name">{name}</h3>
