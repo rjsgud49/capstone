@@ -7,9 +7,18 @@ export default defineConfig({
   server: {
     open: true,
     proxy: {
-      // '/api': 'http://172.28.2.18:8082/', //백엔드 서버 주소
-      '/api': 'http://34.64.91.165:8082', //백엔드 서버 주소
-      // '/api': 'http://192.168.244.44:8082/',
-    },
-  },
+      // 첫 번째 백엔드
+      '/api': {
+        target: 'http://34.64.91.165:8082',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, '/api')
+      },
+      // 두 번째 백엔드
+      '/api1': {
+        target: 'http://172.16.0.190:8888',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api1/, '/api')
+      }
+    }
+  }
 });
