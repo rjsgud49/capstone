@@ -36,22 +36,22 @@ const UserProfile = () => {
                     setUser({
                         ...profile,
                         id: matched.userId,
-                        name: profile.name || matched.userId,
-                        age: profile.age || '()',
-                        gender: profile.gender || '성별 정보 없음',
-                        job: profile.job || '정보없음',
-                        location: profile.location || '정보없음',
+                        name: profile.name || '(미등록)',
+                        age: profile.age || '(미등록)',
+                        gender: profile.gender || '성별 미등록',
+                        job: profile.job || '미등록',
+                        location: profile.location || '미등록',
                         introduction: profile.introduction || '',
                         idealRoommate: profile.idealRoommate || '',
-                        mbti: profile.mbti || '정보없음',
-                        smoking: profile.smoking || '정보없음',
-                        drinking: profile.drinking || '정보없음',
-                        avatar: profile.avatar || '정보없음',
+                        mbti: profile.mbti || '미등록',
+                        smoking: profile.smoking || '미등록',
+                        drinking: profile.drinking || '미등록',
+                        avatar: profile.avatar || '미등록',
                         interests: matched.interests || [],
                         lifestyle: {
-                            wakeUpTime: profile.wakeUpTime || '정보없음',
-                            sleepTime: profile.sleepTime || '정보없음',
-                            dayNightType: profile.dayNightType || '정보없음'
+                            wakeUpTime: profile.wakeUpTime || '미등록',
+                            sleepTime: profile.sleepTime || '미등록',
+                            dayNightType: profile.dayNightType || '미등록'
                         },
                         habits: {
                             food: {
