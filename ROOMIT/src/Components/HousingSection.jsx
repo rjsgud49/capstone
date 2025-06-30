@@ -47,7 +47,7 @@ function HousingSection() {
             <h2 className="section-title">추천 공유 주거 공간</h2>
             <div className="housing-section-content">
                 <div className="housing-grid">
-                    {houses.slice(0, 5).map(house => (
+                    {houses.slice(0, 3).map(house => (
                         <HousingCard
                             key={house.id}
                             name={house.name}
