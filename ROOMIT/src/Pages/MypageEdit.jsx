@@ -5,8 +5,8 @@ import {
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import './css/MyPages.css';
-import { fetchProfile, submitProfile, updateMatching, uploadAvatar } from '../services/user';
-
+import { fetchProfile, submitProfile,  uploadAvatar } from '../services/user';
+// updateMatching,
 const MyEditPage = ({ currentUser, updateUserData }) => {
     const navigate = useNavigate();
 
@@ -302,30 +302,30 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
         }
     };
 
-    const handleToggleMatching = async () => {
-        const newMatchingState = !formData.matching;
-        const updatedFormData = { ...formData, matching: newMatchingState };
+    // const handleToggleMatching = async () => {
+    //     const newMatchingState = !formData.matching;
+    //     const updatedFormData = { ...formData, matching: newMatchingState };
 
-        setFormData(updatedFormData);
-        updateUserData(updatedFormData);
+    //     setFormData(updatedFormData);
+    //     updateUserData(updatedFormData);
 
-        // ✅ userId 사용으로 통일
-        const currentUserId = getUserId();
+    //     // ✅ userId 사용으로 통일
+    //     const currentUserId = getUserId();
 
-        try {
-            await updateMatching(currentUserId, newMatchingState); // ✅ userId 사용
-            alert(newMatchingState ? '미팅 페이지에 공개되었습니다!' : '미팅 페이지에서 비공개되었습니다!');
-        } catch (error) {
-            console.error('매칭 상태 업데이트 실패:', {
-                message: error.message,
-                stack: error.stack,
-                userId: currentUserId, // ✅ userId 사용
-            });
-            alert(`매칭 상태 업데이트에 실패했습니다: ${error.message}`);
-            setFormData({ ...formData, matching: !newMatchingState });
-            updateUserData({ ...formData, matching: !newMatchingState });
-        }
-    };
+    //     try {
+    //         await updateMatching(currentUserId, newMatchingState); // ✅ userId 사용
+    //         alert(newMatchingState ? '미팅 페이지에 공개되었습니다!' : '미팅 페이지에서 비공개되었습니다!');
+    //     } catch (error) {
+    //         console.error('매칭 상태 업데이트 실패:', {
+    //             message: error.message,
+    //             stack: error.stack,
+    //             userId: currentUserId, // ✅ userId 사용
+    //         });
+    //         alert(`매칭 상태 업데이트에 실패했습니다: ${error.message}`);
+    //         setFormData({ ...formData, matching: !newMatchingState });
+    //         updateUserData({ ...formData, matching: !newMatchingState });
+    //     }
+    // };
     useEffect(() => {
         setInterestsInput(
             Array.isArray(formData.interests) ? formData.interests.join(', ') : ''
@@ -687,7 +687,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                         {isSaving ? '저장 중...' : '프로필 저장'}
                     </button>
 
-                    <div className="toggle-container">
+                    {/* <div className="toggle-container">
                         <span className="toggle-label">매칭 페이지 공개</span>
                         <label className="toggle-switch">
                             <input
@@ -697,7 +697,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                             />
                             <span className="toggle-slider"></span>
                         </label>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </>

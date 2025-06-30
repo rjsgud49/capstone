@@ -250,7 +250,7 @@ const UserProfile = () => {
                         width={40}
                         height={40}
                     />
-                    <span>{isFavorited ? '즐겨찾기 제거' : '즐겨찾기'}</span>
+                    {/* <span>{isFavorited ? '즐겨찾기 제거' : '즐겨찾기'}</span> */}
                 </button>
 
                 {/* 자기 자신의 프로필이 아닐 때만 채팅하기 버튼 표시 */}

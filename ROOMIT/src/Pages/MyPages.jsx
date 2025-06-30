@@ -141,7 +141,7 @@ const UserProfile = () => {
 
             <div className="profile-header">
                 <div className="profile-image-large">
-                    <img
+                    {/* <img
                         src={
                             !user.avatar || user.avatar === '정보없음'
                                 ? '/userimg.jpg'
@@ -149,7 +149,13 @@ const UserProfile = () => {
                         }
                         alt={`${user.name}의 프로필`}
                         className="profile-avatardetail"
+                    /> */}
+                    <img
+                        src="userimg.jpg"
+                        alt={`${user.name}의 프로필`}
+                        className="profile-avatardetail"
                     />
+
                 </div>
                 <div className="profile-basic-info">
                     <h1>{user.name}, {user.age}세 ({user.gender})</h1>
