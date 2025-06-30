@@ -12,8 +12,9 @@ function HousingSection() {
         const fetchHousingData = async () => {
             try {
                 const response = await gcpAPI.get('/listings/search', {
-                    params: { query: '강남' },
+                    params: { query: encodeURIComponent('강남') } // ✅ URL 인코딩 추가
                 });
+
 
                 const data = response.data;
                 const mapped = data.map((item, index) => ({
