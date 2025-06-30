@@ -9,14 +9,14 @@ import { fetchAllProfiles } from '../services/user';
 import axios from 'axios';
 import Loading from './Loading';
 
-import useradd from '/src/assets/useradd.svg';
-import deluser from '/src/assets/deluser.svg';
+// import useradd from '/src/assets/useradd.svg';
+// import deluser from '/src/assets/deluser.svg';
 
 const UserProfile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
-    const [isFavorited, setIsFavorited] = useState(false);
+    // const [isFavorited, setIsFavorited] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -139,9 +139,9 @@ const UserProfile = () => {
         }
     };
 
-    const handleFavoriteClick = () => {
-        setIsFavorited(prev => !prev);
-    };
+    // const handleFavoriteClick = () => {
+    //     setIsFavorited(prev => !prev);
+    // };
 
     return (
         <div className="meeting-user-detail">
@@ -243,15 +243,15 @@ const UserProfile = () => {
             ))}
 
             <div className="action-buttons">
-                <button className="adduser-button" onClick={handleFavoriteClick}>
+                {/* <button className="adduser-button" onClick={handleFavoriteClick}>
                     <img
                         src={isFavorited ? deluser : useradd}
                         alt={isFavorited ? 'Remove from Favorites' : 'Add to Favorites'}
                         width={40}
                         height={40}
                     />
-                    {/* <span>{isFavorited ? '즐겨찾기 제거' : '즐겨찾기'}</span> */}
-                </button>
+                    <span>{isFavorited ? '즐겨찾기 제거' : '즐겨찾기'}</span>
+                </button> */}
 
                 {/* 자기 자신의 프로필이 아닐 때만 채팅하기 버튼 표시 */}
                 {!isOwnProfile && (
