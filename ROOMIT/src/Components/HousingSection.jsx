@@ -12,22 +12,25 @@ function HousingSection() {
         const fetchHousingData = async () => {
             try {
                 const response = await gcpAPI.get('/listings/search', {
-                    params: { query: '강남' },
+                    params: { query: '강남' }, // ✅ encodeURIComponent 사용 안 함
                 });
 
-                const data = response.data;
+                const data = response.data.listings; // ✅ 여기 수정
                 const mapped = data.map((item, index) => ({
-                    id: index,
+                    id: item.id ?? index,
                     name: item.name || '쉐어하우스',
                     icon: '🏠',
-                    type: item.roomType || '2인실',
-                    price: `월 ${item.monthly || 50}만원`,
-                    features: item.features || '즉시 입주 가능',
+                    type: item.type || '2인실',
+                    price: item.monthly > 0
+                        ? `보증금 ${item.deposit} / 월세 ${item.monthly}`
+                        : `전세 ${item.deposit}`,
+                    features: `${item.address} • ${item.area}㎡`,
                 }));
+
                 setHouses(mapped);
             } catch (err) {
                 setError('매물 정보를 불러오지 못했습니다.');
-                console.error('❌ 매물 로딩 실패:', err);
+                console.error('❌ 매물 로딩 실패:', err.response?.data || err.message);
             } finally {
                 setLoading(false);
             }
