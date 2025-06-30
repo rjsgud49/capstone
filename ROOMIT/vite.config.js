@@ -15,7 +15,7 @@ export default defineConfig({
       },
       // 두 번째 백엔드
       '/api1': {
-        target: 'http://172.16.0.190:8888',
+        target: 'http://34.122.44.97:8888',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api1/, '/api')
       }
