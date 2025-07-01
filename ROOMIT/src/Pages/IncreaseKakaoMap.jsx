@@ -13,7 +13,11 @@ const IncreaseKakaoMap = () => {
 
   return (
     <div className="increaseKakaoMap">
-      <KakaoMap livingSpace={data.livingSpace} id={data.id} style="height=100vh" />
+      <KakaoMap
+        livingSpace={data.livingSpace}
+        id={data.id}
+        style={{ height: "100vh" }}
+      />
       <button onClick={goBack}>뒤로가기</button>
     </div>
   );
