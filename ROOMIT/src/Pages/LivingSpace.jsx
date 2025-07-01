@@ -1,6 +1,6 @@
 import "./css/LivingSpace.css";
 import LivingSpaceItem from "../Components/LivingSpace_Item";
-import FilterPanel from "../Components/FilterPanel";
+import FilterPanel from "../Components/Filter";
 import Loading from "./Loading";
 import RetryPage from "./RetryPage";
 
