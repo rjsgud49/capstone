@@ -14,7 +14,7 @@ import MeetingDetail from './Pages/MeetingDetail';
 import ChatRoom from './Pages/ChatRoom';
 import MyPages from './Pages/MyPages';
 import LivingSpaceDetail from './Pages/LivingSpaceDetail';
-import IncreaseKakaoMap from './Components/IncreaseKakaoMap';
+import IncreaseKakaoMap from './Pages/IncreaseKakaoMap';
 import Guide from './Pages/Guide.jsx';
 import MypageEdit from './Pages/MypageEdit.jsx';
 import LivingSpaceData from './Data/LivingSpaceData';
