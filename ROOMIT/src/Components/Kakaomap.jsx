@@ -15,7 +15,7 @@ export default function KakaoMap({ livingSpace, id, style, disableControls = fal
         const map = new window.kakao.maps.Map(container, {
           center: coords,
           level: 4,
-          draggable: !disableControls,               
+          draggable: !disableControls,
           scrollwheel: !disableControls,
           disableDoubleClickZoom: disableControls,
         });
@@ -49,7 +49,8 @@ export default function KakaoMap({ livingSpace, id, style, disableControls = fal
       const existingScript = document.querySelector('script[src*="dapi.kakao.com/v2/maps/sdk.js"]');
       if (!existingScript) {
         const script = document.createElement("script");
-        script.src = "https://dapi.kakao.com/v2/maps/sdk.js?appkey=75bc5cd267066eb95e92ea0808e8c631&autoload=false&libraries=services";
+        script.src =
+          "https://dapi.kakao.com/v2/maps/sdk.js?appkey=75bc5cd267066eb95e92ea0808e8c631&autoload=false&libraries=services";
         script.async = true;
         script.onload = loadMap;
         document.head.appendChild(script);

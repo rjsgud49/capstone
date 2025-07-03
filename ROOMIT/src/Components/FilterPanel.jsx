@@ -1,13 +1,29 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./css/FilterPanel.css";
 
+// ✅ key 매핑
 const categoryKeyMap = {
-  "임대 유형": "type",
-  지역: "location",
-  "최대 인원": "maxPersons",
-  면적: "netLeasableArea",
+  "가구 유형": "type",
+  지역: "address",
+  면적: "area",
   가격대: "price",
   "AI 추천": "aiRecommendation",
+};
+
+// ✅ 범위 파싱 함수
+const parseRange = (text) => {
+  if (text.includes("이상")) {
+    const num = parseInt(text);
+    return { min: num, max: Infinity };
+  }
+  if (text.includes("-")) {
+    const [min, max] = text
+      .replace(/[^0-9\-]/g, "")
+      .split("-")
+      .map(Number);
+    return { min, max };
+  }
+  return null;
 };
 
 const FilterHeader = ({ onClose }) => (
@@ -34,9 +50,9 @@ const FilterCategory = ({ category, options, selectedFiltersLS, onToggle }) => {
 
   return (
     <div className="checkbox-group">
-      <strong className="category-title"> {category}</strong>
+      <strong className="category-title">{category}</strong>
       <ul className="nested-options">
-        {options.map((option, index) => (
+        {options.map((option) => (
           <li key={option}>
             <label className="checkbox-label">
               <input
@@ -45,7 +61,7 @@ const FilterCategory = ({ category, options, selectedFiltersLS, onToggle }) => {
                 checked={!!isSelected(option)}
                 onChange={() => onToggle(category, option)}
               />
-              {index === options.length - 1 ? ` ${option}` : ` ${option}`}
+              {option}
             </label>
           </li>
         ))}
@@ -65,7 +81,7 @@ const FilterFooter = ({ onReset, onApply }) => (
   </div>
 );
 
-// 💡 filters 배열을 객체로 변환
+// ✅ selectedFilters 배열 → 객체로 변환
 const getFilterObject = (filters) => {
   const result = {};
   filters.forEach(({ category, value }) => {
@@ -77,32 +93,35 @@ const getFilterObject = (filters) => {
 const FilterPanel = ({ open, setOpen, filters, datas, onFilterChange }) => {
   const [selectedFiltersLS, setSelectedFiltersLS] = useState([]);
 
-  const sortFilter = useMemo(
-    () => ({ category: "등록순", options: ["상관없음", "최신순", "오래된 순"] }),
-    []
-  );
-
-  const filterList = useMemo(() => {
-    const hasSort = filters.some((f) => f.category === "등록순");
-    return hasSort ? filters : [...filters, sortFilter];
-  }, [filters, sortFilter]);
-
   const togglePanel = () => setOpen((prev) => !prev);
 
   const filterDatas = useCallback(
     (filtersObj) => {
       if (!Array.isArray(datas)) return [];
 
-      let filtered = datas.filter((data) =>
-        filterList.every(({ category }) => {
-          if (category === "등록순") return true;
-
+      return datas.filter((data) =>
+        filters.every(({ category }) => {
           const selectedValue = filtersObj[category];
           if (!selectedValue || selectedValue === "상관없음") return true;
 
           const dataKey = categoryKeyMap[category];
           const dataValue = data[dataKey];
 
+          // ✅ 가격대 처리
+          if (category === "가격대") {
+            const range = parseRange(selectedValue);
+            if (!range) return true;
+            return dataValue >= range.min && dataValue < range.max;
+          }
+
+          // ✅ 면적 처리
+          if (category === "면적") {
+            const range = parseRange(selectedValue);
+            if (!range) return true;
+            return dataValue >= range.min && dataValue < range.max;
+          }
+
+          // ✅ 기본 문자열 비교
           if (typeof dataValue === "string") {
             return dataValue.includes(selectedValue);
           } else {
@@ -110,25 +129,8 @@ const FilterPanel = ({ open, setOpen, filters, datas, onFilterChange }) => {
           }
         })
       );
-
-      const sortValue = filtersObj["등록순"];
-      if (sortValue === "최신순") {
-        filtered.sort(
-          (a, b) =>
-            new Date(b.registrationTime.replaceAll(".", "-")) -
-            new Date(a.registrationTime.replaceAll(".", "-"))
-        );
-      } else if (sortValue === "오래된 순") {
-        filtered.sort(
-          (a, b) =>
-            new Date(a.registrationTime.replaceAll(".", "-")) -
-            new Date(b.registrationTime.replaceAll(".", "-"))
-        );
-      }
-
-      return filtered;
     },
-    [datas, filterList]
+    [datas, filters]
   );
 
   useEffect(() => {
@@ -159,7 +161,7 @@ const FilterPanel = ({ open, setOpen, filters, datas, onFilterChange }) => {
   };
 
   const clearFilters = () => {
-    setsSelectedFiltersLS([]);
+    setSelectedFiltersLS([]);
     localStorage.removeItem("selectedFiltersLS");
   };
 
@@ -170,7 +172,7 @@ const FilterPanel = ({ open, setOpen, filters, datas, onFilterChange }) => {
       <FilterHeader onClose={togglePanel} />
       <SelectedFilters selectedFiltersLS={selectedFiltersLS} onRemove={toggleFilter} />
       <div className="filterOptions">
-        {filterList.map(({ category, options }) => (
+        {filters.map(({ category, options }) => (
           <FilterCategory
             key={category}
             category={category}

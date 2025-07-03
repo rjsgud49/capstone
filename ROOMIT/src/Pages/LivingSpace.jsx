@@ -10,7 +10,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { fetchAllLivingSpace } from "../services/livingSpace"; // ✅ API 함수 불러오기
 
 const filterOptions = [
-  { category: "등록순", options: ["상관없음", "최신순", "오래된 순"] },
   { category: "가구 유형", options: ["상관없음", "아파트", "원룸", "단독/다가구"] },
   {
     category: "지역",
@@ -20,9 +19,9 @@ const filterOptions = [
       "세종", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주",
     ],
   },
-  { category: "최대 인원", options: ["상관없음", "1명", "2명", "3명", "4명", "5명 이상"] },
+  // { category: "최대 인원", options: ["상관없음", "1명", "2명", "3명", "4명", "5명 이상"] },
   { category: "면적", options: ["상관없음", "20-29평", "30-39평", "40-49평", "50평 이상"] },
-  { category: "가격대", options: ["상관없음", "0-50만원", "50-100만원", "100만원 이상"] },
+  { category: "가격대", options: ["상관없음", "100-500만원", "500-1000만원", "1000만원 이상"] },
   { category: "AI 추천", options: ["학교 근처 순", "직장 근처 순", "편의시설 근처 순"] },
 ];
 

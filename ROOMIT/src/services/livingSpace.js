@@ -1,10 +1,18 @@
 import gcpAPI from "./gcp"; // ✅ 외부 axios 인스턴스 import
+import axios from "axios"; // ✅ axios 라이브러리 import
+
+const api = axios.create({
+  baseURL: "/api",
+  headers: {
+    "Content-Type": "application/json; charset=UTF-8",
+  },
+});
 
 // 전체 매물 조회
 export const fetchAllLivingSpace = async (query = "상인동") => {
   try {
     console.log("📡 요청 query:", query);
-    const response = await gcpAPI.get("/listings/search", {
+    const response = await api.get("/listings/search", {
       params: { query },
     });
     console.log("📥 받은 응답:", response.data);
@@ -24,13 +32,13 @@ export const fetchAllLivingSpace = async (query = "상인동") => {
 
 // ID로 개별 매물 조회
 export const fetchListingById = async (id) => {
-  const response = await gcpAPI.get(`/listings/${id}`);
+  const response = await api.get(`/listings/${id}`);
   return response.data;
 };
 
 // AI 요약 문장 생성 요청
 export const fetchAiSummary = async (data) => {
-  const response = await gcpAPI.post("/summary", {
+  const response = await api.post("/summary", {
     address: data.address,
     netLeasableArea: data.area,
     deposit: data.deposit,
