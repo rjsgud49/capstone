@@ -1,6 +1,6 @@
 import "./css/LivingSpace.css";
 import LivingSpaceItem from "../Components/LivingSpace_Item";
-import FilterPanel from "../Components/Filter";
+import FilterPanel from "../Components/FilterPanel";
 import Loading from "./Loading";
 import RetryPage from "./RetryPage";
 
@@ -40,8 +40,8 @@ const LivingSpace = () => {
       const data = await fetchAllLivingSpace("상인동");
       setLivingSpaces(data);
       setFilteredLivingSpaces(data);
-    // } catch (err) {
-    //   setError("데이터 불러오기 실패");
+    } catch (err) {
+      setError("데이터 불러오기 실패");
     } finally {
       setIsLoading(false);
     }
