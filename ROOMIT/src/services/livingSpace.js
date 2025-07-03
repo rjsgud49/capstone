@@ -1,4 +1,4 @@
-import gcpAPI from './gcp'; // ✅ 외부 axios 인스턴스 import
+import gcpAPI from "./gcp"; // ✅ 외부 axios 인스턴스 import
 
 // 전체 매물 조회
 export const fetchAllLivingSpace = async (query = "상인동") => {
