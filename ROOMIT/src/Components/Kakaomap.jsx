@@ -15,7 +15,7 @@ export default function KakaoMap({ livingSpace, id, style, disableControls = fal
         const map = new window.kakao.maps.Map(container, {
           center: coords,
           level: 4,
-          draggable: !disableControls,               
+          draggable: !disableControls,
           scrollwheel: !disableControls,
           disableDoubleClickZoom: disableControls,
         });
@@ -26,9 +26,24 @@ export default function KakaoMap({ livingSpace, id, style, disableControls = fal
         });
 
         const content = `
-          <div style="background:white;padding:10px;border-radius:10px;font-size:14px;">
-            <b>📍 추천 매물</b><br/>
-            ${livingSpace.address}
+          <div style="
+            background: white;
+            border-radius: 12px;
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #333;
+            box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
+            min-width: 180px;
+            max-width: 240px;
+            white-space: nowrap;
+            font-family: 'Segoe UI', sans-serif;
+          ">
+            <div style="font-weight: 600; font-size: 16px; color: #2a2a2a; margin-bottom: 4px;">
+              📍 추천 매물
+            </div>
+            <div style="font-size: 13px; color: #666;">
+              ${livingSpace.name}
+            </div>
           </div>
         `;
 
@@ -49,7 +64,8 @@ export default function KakaoMap({ livingSpace, id, style, disableControls = fal
       const existingScript = document.querySelector('script[src*="dapi.kakao.com/v2/maps/sdk.js"]');
       if (!existingScript) {
         const script = document.createElement("script");
-        script.src = "https://dapi.kakao.com/v2/maps/sdk.js?appkey=75bc5cd267066eb95e92ea0808e8c631&autoload=false&libraries=services";
+        script.src =
+          "https://dapi.kakao.com/v2/maps/sdk.js?appkey=75bc5cd267066eb95e92ea0808e8c631&autoload=false&libraries=services";
         script.async = true;
         script.onload = loadMap;
         document.head.appendChild(script);
@@ -64,7 +80,7 @@ export default function KakaoMap({ livingSpace, id, style, disableControls = fal
       id="map"
       style={{
         width: "100%",
-        height: "300px",
+        height: "100%",
         borderRadius: "10px",
         overflow: "hidden",
         ...style,

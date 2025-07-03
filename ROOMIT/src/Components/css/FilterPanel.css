@@ -3,12 +3,17 @@
   top: 0;
   right: -300px;
   width: 300px;
-  height: 100%;
+  height: 500px;
+  margin-top: 15%;
   background-color: #fff;
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  box-shadow: -2px 0 15px rgba(0, 0, 0, 0.15);
+  padding: 24px 20px;
   transition: right 0.3s ease;
   z-index: 1000;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 14px;
+  border-radius: 10px;
+  overflow-y: auto;
 }
 
 .filterPanel.open {
@@ -22,10 +27,15 @@
   margin-bottom: 20px;
 }
 
+.filterHeader strong {
+  font-size: 16px;
+  color: #4a6cf7;
+}
+
 .filterOptions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .filterFooter {
@@ -34,18 +44,81 @@
   justify-content: space-between;
 }
 
-.btn {
+.lvsbtn {
   padding: 8px 16px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
 }
 
 .btn-reset {
   background-color: #f3f4f6;
+  color: #333;
 }
 
 .btn-apply {
-  background-color: #3b82f6;
+  background-color: #4a6cf7;
   color: white;
+}
+
+.selectedFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.filter-tag {
+  display: flex;
+  align-items: center;
+  background-color: #e5ecff;
+  color: #1f3bb3;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.filter-tag span {
+  cursor: pointer;
+  font-weight: bold;
+  color: #4a6cf7;
+  margin-left: 4px;
+}
+
+.filter-tag:hover {
+  background-color: #d7e2ff;
+}
+
+.category-title {
+  margin-top: 1rem;
+  margin-left: 5px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #4a6cf7;
+}
+
+.nested-options {
+  list-style: none;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.nested-options li {
+  margin: 4px 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.checkbox-label input[type="radio"] {
+  accent-color: #4a6cf7;
 }

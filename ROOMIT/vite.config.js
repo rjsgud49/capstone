@@ -1,6 +1,6 @@
 // vite.config.js
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
@@ -8,17 +8,17 @@ export default defineConfig({
     open: true,
     proxy: {
       // 첫 번째 백엔드
-      '/api': {
-        target: 'http://34.64.91.165:8082',
+      "/api": {
+        target: "http://34.64.91.165:8082",
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, '/api')
+        rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
       // 두 번째 백엔드
-      '/api1': {
-        target: 'http://34.122.44.97:8888',
+      "/api1": {
+        target: "http://34.122.44.97:8888",
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/api1/, '/api')
-      }
-    }
-  }
+        rewrite: (path) => path.replace(/^\/api1/, "/api"),
+      },
+    },
+  },
 });
