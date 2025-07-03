@@ -1,0 +1,44 @@
+.toggle-filter-container {
+    display: flex;
+    cursor: pointer;
+    user-select: none;
+    z-index: 1000;
+    gap: 5px;
+}
+
+.toggle-switch {
+    width: 40px;
+    height: 20px;
+    background-color: #fff;
+    border-radius: 9999px;
+    position: relative;
+    transition: background-color 0.3s ease;
+    z-index: 10;
+}
+
+.toggle-switch.on {
+    background-color: #4caf50;
+}
+
+.toggle-circle {
+    width: 16px;
+    height: 16px;
+    background-color: #d9d9d9;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    z-index: 10;
+}
+
+.toggle-switch.on .toggle-circle {
+    transform: translateX(20px);
+    background-color: #fff;
+}
+
+.toggle-label {
+    font-size: 13px;
+    color: #000;
+    z-index: 10;
+}
