@@ -38,3 +38,20 @@ export const fetchAiSummary = async (data) => {
   });
   return response.data.summary;
 };
+
+
+/**
+ * 주변 시설 정보 조회
+ * @param {string} address - 주소 (예: "대구 달서구 상인동 1456-11")
+ * @returns {Promise<Object>} 카페, 편의점, 병원 등 카테고리별 데이터 객체
+ */
+export const fetchFacilitiesByAddress = async (address) => {
+  try {
+    const encoded = encodeURIComponent(address);
+    const res = await gcpAPI.get(`/facilities?query=${encoded}`);
+    return res.data;
+  } catch (err) {
+    console.error("❌ 시설 정보 API 호출 실패:", err);
+    throw err;
+  }
+};

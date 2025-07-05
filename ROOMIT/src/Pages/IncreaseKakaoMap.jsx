@@ -3,7 +3,8 @@ import KakaoMap from "../Components/Kakaomap";
 import ToggleButton from "../Components/ToggleFilter";
 import "./css/IncreaseKakaoMap.css";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { fetchFacilitiesByAddress } from "../services/livingSpace"; // ✅ 외부 API 호출 함수
+
 
 const IncreaseKakaoMap = () => {
   const navigate = useNavigate();
@@ -13,19 +14,17 @@ const IncreaseKakaoMap = () => {
   const [selectedCategories, setSelectedCategories] = useState({});
 
   useEffect(() => {
-    const fetchFacilities = async () => {
+    const fetchData = async () => {
       try {
         const address = data.livingSpace?.address || "대구 달서구 상인동 1456-11";
-        const res = await axios.get(
-          `http://34.122.44.97:8888/api/facilities?query=${encodeURIComponent(address)}`
-        );
-        setFacilityData(res.data);
+        const facilities = await fetchFacilitiesByAddress(address); // ✅ 외부 API 호출
+        setFacilityData(facilities);
       } catch (err) {
         console.error("시설 정보 가져오기 실패:", err);
       }
     };
 
-    fetchFacilities();
+    fetchData();
   }, [data]);
 
   const goBack = () => navigate(-1);
