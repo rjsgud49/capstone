@@ -20,7 +20,12 @@ const IncreaseKakaoMap = () => {
 
   return (
     <div className="increaseKakaoMap">
-      <KakaoMap livingSpace={data.livingSpace} id={data.id} style="height=100vh" />
+      <KakaoMap
+        livingSpace={data.livingSpace}
+        id={data.id}
+        style={{ height: "100vh" }} // ✅ 올바른 방식
+      />
+
       <div className="filter-toggle">
         <ToggleButton label="편의점" onToggle={(isOn) => handleToggle("편의점", isOn)} />
         <ToggleButton label="체육관" onToggle={(isOn) => handleToggle("체육관", isOn)} />
