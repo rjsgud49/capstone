@@ -71,11 +71,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
     useEffect(() => {
         let isMounted = true;
 
-        // ✅ 초기화 시 userId 재확인
         const currentUserId = getUserId();
-        console.log('🔍 userId 확인:', currentUserId);
-        console.log('🔍 currentUser 전체:', currentUser);
-
         if (!currentUserId) {
             setError('사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.');
             return;
@@ -85,12 +81,10 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
             setIsLoading(true);
             setError(null);
             try {
-                console.log('🔍 프로필 로딩 시작, userId:', currentUserId);
-
                 const data = await fetchProfile(currentUserId);
                 if (isMounted) {
                     const initData = {
-                        userId: currentUserId, // ✅ 확실한 userId 사용
+                        userId: currentUserId,
                         name: data.name || '',
                         age: data.age || '',
                         job: data.job || '',
@@ -104,13 +98,13 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                         mbti: data.mbti || '',
                         smoking: data.smoking || '',
                         drinking: data.drinking || '',
-                        matching: data.matching || currentUser?.matching || false,
+                        matching: data.matching ?? false,
                         lifestyle: {
                             wakeUpTime: data.wakeUpTime || '',
                             sleepTime: data.sleepTime || '',
                             dayNightPreference: data.dayNightType || '',
                         },
-                        habits: currentUser?.habits || {
+                        habits: data.habits || {
                             food: { mealTime: '', kitchenUse: '', cookingFrequency: '' },
                             cleaning: { cleanLevel: '', cleaningFrequency: '', sharedSpaceManagement: '' },
                             noiseSensitivity: { sensitivityLevel: '', sleepNoisePreference: '', musicTVVolume: '' },
@@ -119,13 +113,10 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                     };
 
                     setFormData(initData);
+                    setInterestsInput((data.interests || []).join(', '));
                 }
             } catch (error) {
-                console.error('프로필 로딩 실패:', {
-                    message: error.message,
-                    stack: error.stack,
-                    userId: currentUserId,
-                });
+                console.error('프로필 로딩 실패:', error);
                 if (isMounted) {
                     setError('프로필을 불러올 수 없습니다. 서버에 연결할 수 없거나 네트워크 문제가 발생했습니다.');
                 }
@@ -136,14 +127,13 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
             }
         };
 
-        if (currentUserId) {
-            loadProfile();
-        }
+        loadProfile();
 
         return () => {
             isMounted = false;
         };
-    }, [currentUser]); // ✅ 의존성 단순화
+    }, []); // currentUser 제거
+ // ✅ 의존성 단순화
 
     useEffect(() => {
         return () => {
