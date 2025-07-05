@@ -5,7 +5,9 @@ import RetryPage from "./RetryPage";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+
 import { fetchListingById, fetchAiSummary } from "../services/livingSpace"; // ✅ 새로운 fetch 함수 사용
+import { formatKoreanCurrency } from "../utils/format";
 
 const LivingSpaceDetail = () => {
   const { id } = useParams(); // 문자열로 들어옴
@@ -50,9 +52,10 @@ const LivingSpaceDetail = () => {
           <div className="info">
             <h3>{livingSpace.name}</h3>
             <p>가구 유형: {livingSpace.type}</p>
-            <p>보증금: {livingSpace.deposit}</p>
-            {livingSpace.type !== "아파트" && <p>월세: {livingSpace.monthly}</p>}
-            <p>임대료: {livingSpace.price}</p>
+            {livingSpace.type === "원룸" && (
+              <p>월세: {formatKoreanCurrency(livingSpace.monthly)}</p>
+            ) && <p>보증금: {formatKoreanCurrency(livingSpace.deposit)}</p>}
+            <p>가격: {formatKoreanCurrency(livingSpace.price)}</p>
             <p>위치: {livingSpace.address}</p>
             <p>전용면적: {livingSpace.area}평</p>
           </div>

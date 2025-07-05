@@ -459,7 +459,7 @@
 }
 
 /* 토글 스위치 스타일 */
-.toggle-container {
+/* .toggle-container {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -517,4 +517,4 @@ input:focus+.toggle-slider {
 
 input:checked+.toggle-slider:before {
     transform: translateX(30px);
-}
+} */

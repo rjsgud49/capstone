@@ -1,9 +1,22 @@
 import React, { useEffect } from "react";
-// import { useNavigate } from "react-router-dom";
 
-export default function KakaoMap({ livingSpace, id, style, disableControls = false }) {
+export default function KakaoMap({
+  livingSpace,
+  id,
+  style,
+  disableControls = false,
+  facilityData = {},
+  selectedCategories = {},
+}) {
   useEffect(() => {
     if (!livingSpace?.lat || !livingSpace?.lng) return;
+
+    let facilityMarkers = [];
+
+    const clearMarkers = () => {
+      facilityMarkers.forEach((marker) => marker.setMap(null));
+      facilityMarkers = [];
+    };
 
     const loadMap = () => {
       window.kakao.maps.load(() => {
@@ -11,57 +24,75 @@ export default function KakaoMap({ livingSpace, id, style, disableControls = fal
         if (!container) return;
 
         const coords = new window.kakao.maps.LatLng(livingSpace.lat, livingSpace.lng);
-
         const map = new window.kakao.maps.Map(container, {
           center: coords,
           level: 4,
           draggable: !disableControls,
           scrollwheel: !disableControls,
-          disableDoubleClickZoom: disableControls,
         });
 
-        const marker = new window.kakao.maps.Marker({
-          position: coords,
-          map,
-        });
+        // 메인 매물 마커
+        new window.kakao.maps.Marker({ position: coords, map });
 
-        const content = `
-          <div style="
-            background: white;
-            border-radius: 12px;
-            padding: 10px 15px;
-            font-size: 14px;
-            color: #333;
-            box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
-            min-width: 180px;
-            max-width: 240px;
-            white-space: nowrap;
-            font-family: 'Segoe UI', sans-serif;
-          ">
-            <div style="font-weight: 600; font-size: 16px; color: #2a2a2a; margin-bottom: 4px;">
-              📍 추천 매물
-            </div>
-            <div style="font-size: 13px; color: #666;">
-              ${livingSpace.name}
-            </div>
-          </div>
-        `;
+        // 시설 분류 맵핑
+        const categoryMap = {
+          "편의점": "convenience_stores",
+          "카페": "cafes",
+          "체육관": "gyms",
+          "기차역": "subway_stations",
+          "병원": "hospitals",
+        };
 
-        const customOverlay = new window.kakao.maps.CustomOverlay({
-          content,
-          position: coords,
-          yAnchor: 1.5,
-        });
+        // 아이콘 이미지 매핑
+        const imageSrcMap = {
+          "편의점": "https://maps.gstatic.com/mapfiles/ms2/micons/blue-dot.png",
+          "카페": "https://maps.gstatic.com/mapfiles/ms2/micons/coffeehouse.png",
+          "체육관": "https://maps.gstatic.com/mapfiles/ms2/micons/green-dot.png",
+          "기차역": "https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png",
+          "병원": "https://maps.gstatic.com/mapfiles/ms2/micons/hospitals.png",
+        };
 
-        window.kakao.maps.event.addListener(marker, "click", () => {
-          customOverlay.setMap(map);
+
+        clearMarkers(); // ✅ 기존 마커 제거
+
+        // 선택된 카테고리에 대한 마커 생성
+        Object.entries(selectedCategories).forEach(([label, isOn]) => {
+          if (!isOn) return;
+
+          const categoryKey = categoryMap[label];
+          const places = facilityData?.[categoryKey] || [];
+
+          places.forEach((place) => {
+            const imageSrc = imageSrcMap[label];
+            const imageSize = new window.kakao.maps.Size(30, 30);
+            const markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize);
+
+            const marker = new window.kakao.maps.Marker({
+              map,
+              position: new window.kakao.maps.LatLng(place.lat, place.lng),
+              title: place.name,
+              image: markerImage,
+            });
+
+            facilityMarkers.push(marker); // 저장해서 나중에 제거할 수 있게
+
+            const infowindow = new window.kakao.maps.InfoWindow({
+              content: `<div style="padding:5px;font-size:12px">${place.name}</div>`,
+            });
+
+            window.kakao.maps.event.addListener(marker, "click", () => {
+              infowindow.open(map, marker);
+            });
+          });
         });
       });
     };
 
-    if (window.kakao?.maps) loadMap();
-    else {
-      const existingScript = document.querySelector('script[src*="dapi.kakao.com/v2/maps/sdk.js"]');
+    // 카카오맵 로딩 여부 확인
+    if (window.kakao?.maps) {
+      loadMap();
+    } else {
+      const existingScript = document.querySelector('script[src*="dapi.kakao.com"]');
       if (!existingScript) {
         const script = document.createElement("script");
         script.src =
@@ -73,7 +104,7 @@ export default function KakaoMap({ livingSpace, id, style, disableControls = fal
         existingScript.addEventListener("load", loadMap);
       }
     }
-  }, [livingSpace, id, disableControls]);
+  }, [livingSpace, id, disableControls, facilityData, selectedCategories]);
 
   return (
     <div
