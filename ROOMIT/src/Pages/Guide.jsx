@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import '../Pages/css/Guide.css';
 
-const sampleAgreement = `
-
+// 상수 데이터 분리
+const SAMPLE_AGREEMENT = `
 룸메이트 주거계약 합의서
 [ 제1조 (계약 당사자) ]
 본 계약은 아래 당사자 간의 자발적인 의사에 따라 체결되었습니다.
@@ -55,170 +55,263 @@ const sampleAgreement = `
 제2입주자    __________________    [ ]        ____년 __월 __일
 `;
 
-const steps = [
-  {
-    id: 'matching',
-    icon: '🤝',
-    title: '매칭 단계',
-    content: (
-      <>
-        <div className="detail-card">
-          <div className="card-icon">👥</div>
-          <div className="card-content">
-            <h3>완벽한 룸메이트 찾기</h3>
-            <p>매칭 페이지에서 자신과 라이프스타일, 취향이 잘 맞는 룸메이트 후보를 찾아보세요.</p>
-          </div>
-        </div>
-        <div className="detail-card">
-          <div className="card-icon">💬</div>
-          <div className="card-content">
-            <h3>실시간 채팅으로 소통</h3>
-            <p><strong>'채팅 시작'</strong> 버튼을 눌러 직접 대화를 통해 상호작용하고, 서로에 대한 이해를 깊게 합니다.</p>
-          </div>
-        </div>
-        <div className="tip-box">
-          <span className="tip-icon">💡</span>
-          <strong>Tip:</strong> 생활 패턴, 청소 습관, 개인 공간 선호도 등을 미리 대화해보세요!
-        </div>
-      </>
-    )
-  },
-  {
-    id: 'housing',
-    icon: '🏡',
-    title: '주거지 탐색',
-    content: (
-      <>
-        <div className="detail-card">
-          <div className="card-icon">📍</div>
-          <div className="card-content">
-            <h3>맞춤 집 추천</h3>
-            <p>매칭이 잘 된 룸메이트와 함께 <strong>주거 페이지</strong>에서 추천 집 리스트를 확인해볼 수 있습니다.</p>
-          </div>
-        </div>
-        <div className="detail-card">
-          <div className="card-icon">💰</div>
-          <div className="card-content">
-            <h3>조건별 비교분석</h3>
-            <p>조건(보증금, 월세, 전세, 위치 등)에 맞는 집을 함께 비교하고 의견을 나눠보세요.</p>
-          </div>
-        </div>
-        <div className="checklist">
-          <h4>🔍 체크포인트</h4>
-          <ul className="checklist-items">
-            <li>✓ 교통편 접근성</li>
-            <li>✓ 주변 편의시설</li>
-            <li>✓ 보안 및 안전성</li>
-            <li>✓ 방음 상태</li>
-          </ul>
-        </div>
-      </>
-    )
-  },
-  {
-    id: 'contract',
-    icon: '📄',
-    title: '계약 가이드',
-    content: (
-      <>
-        <div className="warning-box">
-          <span className="warning-icon">⚠️</span>
-          <p>중요한 법적 문제(명의, 보증금, 계약서 작성 등)를 안전하게 해결할 수 있도록 다음 가이드를 참고하세요.</p>
-        </div>
+// 재사용 가능한 컴포넌트들
+const DetailCard = ({ icon, title, children }) => (
+  <div className="detail-card">
+    <div className="card-icon">{icon}</div>
+    <div className="card-content">
+      <h3>{title}</h3>
+      {children}
+    </div>
+  </div>
+);
 
-        <div className="contract-guidelines">
-          {[['🏢', '공인중개사 통한 정식 계약', '전문가의 도움으로 안전한 계약 진행'],
-          ['👥', '공동명의 및 보증금 관리', '명의 및 보증금 관리 방법 사전 협의'],
-          ['📝', '계약서 내용 검토', '계약 전 꼭 계약서 내용을 함께 검토']].map(([icon, title, desc], i) => (
-            <div className="guideline-item" key={i}>
-              <span className="guideline-icon">{icon}</span>
-              <div>
-                <h4>{title}</h4>
-                <p>{desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+const TipBox = ({ children }) => (
+  <div className="tip-box">
+    <span className="tip-icon">💡</span>
+    <strong>Tip:</strong> {children}
+  </div>
+);
 
-        <div className="extra-checklist">
-          <h4>📌 계약 전 체크리스트</h4>
-          <ul className="no-bullet">
-            <li>등기부등본 확인 (임대인이 실제 집주인인지 확인)</li>
-            <li>확정일자 받기 (보증금 보호용)</li>
-            <li>전입신고 하기</li>
-          </ul>
-        </div>
+const WarningBox = ({ children }) => (
+  <div className="warning-box">
+    <span className="warning-icon">⚠️</span>
+    {children}
+  </div>
+);
 
-        <div className="extra-checklist">
-          <h4>💰 보증금 반환 시 유의사항</h4>
-          <ul className="no-bullet">
-            <li>퇴실 청소 여부 확인</li>
-            <li>공과금 정산 완료 확인</li>
-            <li>보증금 반환 일정 및 방법 사전 합의</li>
-          </ul>
-        </div>
+const CheckList = ({ title, items }) => (
+  <div className="checklist">
+    <h4>{title}</h4>
+    <ul className="checklist-items">
+      {items.map((item, index) => (
+        <li key={index}>✓ {item}</li>
+      ))}
+    </ul>
+  </div>
+);
 
-        <div className="extra-checklist">
-          <h4>🏢 중개사 수수료 안내</h4>
-          <ul className="no-bullet">
-            <li>월세 기준 통상 0.3~0.5개월치</li>
-            <li>사전 협의 및 영수증 요청하기</li>
-          </ul>
-        </div>
+const ExtraCheckList = ({ title, items }) => (
+  <div className="extra-checklist">
+    <h4>{title}</h4>
+    <ul className="no-bullet">
+      {items.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+  </div>
+);
 
-        <div className="document-section">
-          <h3>📋 추천 합의서 양식</h3>
-          <p>안전한 계약 진행을 위한 간단한 합의서를 작성해보세요:</p>
-          <div className="document-container">
-            <div className="document-header">
-              <span className="doc-icon">📄</span>
-              <span>룸메이트 주거 계약 합의서</span>
-              <button className="copy-btn" onClick={() => navigator.clipboard.writeText(sampleAgreement)}>📋 복사</button>
-            </div>
-            <pre className="document-sample">{sampleAgreement}</pre>
-          </div>
-        </div>
-      </>
-    )
-  },
-  {
-    id: 'dispute',
-    icon: '⚖️',
-    title: '분쟁 해결',
-    content: (
-      <>
-        {[['💬', '1단계: 대화를 통한 해결', '집 파손과 같은 문제는 사용자 간 충분한 대화를 통해 합의를 시도합니다.'],
-        ['🤝', '2단계: 플랫폼 중재', '필요시 플랫폼에서 가이드 및 중재 기능을 제공할 예정입니다.'],
-        ['⚖️', '3단계: 전문기관 상담', '심각한 분쟁의 경우 관련 전문기관을 통한 해결을 권장합니다.']].map(([icon, title, desc], i) => (
-          <div className="resolution-step" key={i}>
-            <div className="resolution-icon">{icon}</div>
-            <div className="resolution-content">
-              <h4>{title}</h4>
-              <p>{desc}</p>
-            </div>
-          </div>
-        ))}
+const GuidelineItem = ({ icon, title, description }) => (
+  <div className="guideline-item">
+    <span className="guideline-icon">{icon}</span>
+    <div>
+      <h4>{title}</h4>
+      <p>{description}</p>
+    </div>
+  </div>
+);
 
-        <div className="emergency-contacts">
-          <h4>🆘 비상 연락처</h4>
-          <div className="contact-grid">
-            <div className="contact-item">
-              <strong>소비자분쟁조정위원회</strong>
-              <p>1372</p>
-            </div>
-            <div className="contact-item">
-              <strong>법률상담</strong>
-              <p>대한법률구조공단 132</p>
-            </div>
-          </div>
-        </div>
-      </>
-    )
-  },
-];
+const ResolutionStep = ({ icon, title, description }) => (
+  <div className="resolution-step">
+    <div className="resolution-icon">{icon}</div>
+    <div className="resolution-content">
+      <h4>{title}</h4>
+      <p>{description}</p>
+    </div>
+  </div>
+);
 
+const ContactItem = ({ title, phone }) => (
+  <div className="contact-item">
+    <strong>{title}</strong>
+    <p>{phone}</p>
+  </div>
+);
+
+// 메인 컴포넌트
 export default function Guide() {
   const [activeId, setActiveId] = useState(null);
+
+  // 유틸리티 함수들
+  const handleDownload = (type) => {
+    const fileName = type === 'docx'
+      ? '룸메이트_주거계약_합의서.docx'
+      : '룸메이트_주거계약_합의서.hwpx';
+    const filePath = `/${fileName}`;
+    const link = document.createElement('a');
+    link.href = filePath;
+    link.download = fileName;
+    link.click();
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(SAMPLE_AGREEMENT);
+  };
+
+  const toggleStep = (stepId) => {
+    setActiveId(activeId === stepId ? null : stepId);
+  };
+
+  // 단계별 컨텐츠 생성 함수들
+  const renderMatchingContent = () => (
+    <>
+      <DetailCard icon="👥" title="완벽한 룸메이트 찾기">
+        <p>매칭 페이지에서 자신과 라이프스타일, 취향이 잘 맞는 룸메이트 후보를 찾아보세요.</p>
+      </DetailCard>
+
+      <DetailCard icon="💬" title="실시간 채팅으로 소통">
+        <p><strong>'채팅 시작'</strong> 버튼을 눌러 직접 대화를 통해 상호작용하고, 서로에 대한 이해를 깊게 합니다.</p>
+      </DetailCard>
+
+      <TipBox>
+        생활 패턴, 청소 습관, 개인 공간 선호도 등을 미리 대화해보세요!
+      </TipBox>
+    </>
+  );
+
+  const renderHousingContent = () => (
+    <>
+      <DetailCard icon="📍" title="맞춤 집 추천">
+        <p>매칭이 잘 된 룸메이트와 함께 <strong>주거 페이지</strong>에서 추천 집 리스트를 확인해볼 수 있습니다.</p>
+      </DetailCard>
+
+      <DetailCard icon="💰" title="조건별 비교분석">
+        <p>조건(보증금, 월세, 전세, 위치 등)에 맞는 집을 함께 비교하고 의견을 나눠보세요.</p>
+      </DetailCard>
+
+      <CheckList
+        title="🔍 체크포인트"
+        items={['교통편 접근성', '주변 편의시설', '보안 및 안전성', '방음 상태']}
+      />
+    </>
+  );
+
+  const renderContractContent = () => (
+    <>
+      <WarningBox>
+        <p>중요한 법적 문제(명의, 보증금, 계약서 작성 등)를 안전하게 해결할 수 있도록 다음 가이드를 참고하세요.</p>
+      </WarningBox>
+
+      <div className="contract-guidelines">
+        <GuidelineItem
+          icon="🏢"
+          title="공인중개사 통한 정식 계약"
+          description="전문가의 도움으로 안전한 계약 진행"
+        />
+        <GuidelineItem
+          icon="👥"
+          title="공동명의 및 보증금 관리"
+          description="명의 및 보증금 관리 방법 사전 협의"
+        />
+        <GuidelineItem
+          icon="📝"
+          title="계약서 내용 검토"
+          description="계약 전 꼭 계약서 내용을 함께 검토"
+        />
+      </div>
+
+      <ExtraCheckList
+        title="📌 계약 전 체크리스트"
+        items={[
+          '등기부등본 확인 (임대인이 실제 집주인인지 확인)',
+          '확정일자 받기 (보증금 보호용)',
+          '전입신고 하기'
+        ]}
+      />
+
+      <ExtraCheckList
+        title="💰 보증금 반환 시 유의사항"
+        items={[
+          '퇴실 청소 여부 확인',
+          '공과금 정산 완료 확인',
+          '보증금 반환 일정 및 방법 사전 합의'
+        ]}
+      />
+
+      <ExtraCheckList
+        title="🏢 중개사 수수료 안내"
+        items={[
+          '월세 기준 통상 0.3~0.5개월치',
+          '사전 협의 및 영수증 요청하기'
+        ]}
+      />
+
+      <div className="document-section">
+        <h3>📋 추천 합의서 양식</h3>
+        <p>안전한 계약 진행을 위한 간단한 합의서를 작성해보세요:</p>
+        <div className="document-container">
+          <div className="document-header">
+            <span className="doc-icon">📄</span>
+            <span>룸메이트 주거 계약 합의서</span>
+            <button className="copy-btn" onClick={() => handleDownload('hwpx')}>
+              📥 한글(.hwp) 다운로드
+            </button>
+            <button className="copy-btn" onClick={copyToClipboard}>
+              📋 복사
+            </button>
+          </div>
+          <pre className="document-sample">{SAMPLE_AGREEMENT}</pre>
+        </div>
+      </div>
+    </>
+  );
+
+  const renderDisputeContent = () => (
+    <>
+      <ResolutionStep
+        icon="💬"
+        title="1단계: 대화를 통한 해결"
+        description="집 파손과 같은 문제는 사용자 간 충분한 대화를 통해 합의를 시도합니다."
+      />
+      <ResolutionStep
+        icon="🤝"
+        title="2단계: 플랫폼 중재"
+        description="필요시 플랫폼에서 가이드 및 중재 기능을 제공할 예정입니다."
+      />
+      <ResolutionStep
+        icon="⚖️"
+        title="3단계: 전문기관 상담"
+        description="심각한 분쟁의 경우 관련 전문기관을 통한 해결을 권장합니다."
+      />
+
+      <div className="emergency-contacts">
+        <h4>🆘 비상 연락처</h4>
+        <div className="contact-grid">
+          <ContactItem title="소비자분쟁조정위원회" phone="1372" />
+          <ContactItem title="법률상담" phone="대한법률구조공단 132" />
+        </div>
+      </div>
+    </>
+  );
+
+  // 단계 정의
+  const steps = [
+    {
+      id: 'matching',
+      icon: '🤝',
+      title: '매칭 단계',
+      content: renderMatchingContent()
+    },
+    {
+      id: 'housing',
+      icon: '🏡',
+      title: '주거지 탐색',
+      content: renderHousingContent()
+    },
+    {
+      id: 'contract',
+      icon: '📄',
+      title: '계약 가이드',
+      content: renderContractContent()
+    },
+    {
+      id: 'dispute',
+      icon: '⚖️',
+      title: '분쟁 해결',
+      content: renderDisputeContent()
+    }
+  ];
 
   return (
     <div className="guide-container">
@@ -227,7 +320,9 @@ export default function Guide() {
           <span className="title-icon">🏠</span>
           ROOMIT 이용 가이드
         </h1>
-        <p className="guide-subtitle">안전하고 편리한 룸메이트 매칭부터 계약까지, 단계별 가이드를 확인하세요!</p>
+        <p className="guide-subtitle">
+          안전하고 편리한 룸메이트 매칭부터 계약까지, 단계별 가이드를 확인하세요!
+        </p>
       </div>
 
       <div className="guide-content">
@@ -237,9 +332,14 @@ export default function Guide() {
             <div className="guide-step" key={step.id}>
               <div className="step-number">{index + 1}</div>
               <div className="step-content">
-                <div className="step-header" onClick={() => setActiveId(activeId === step.id ? null : step.id)}>
+                <div
+                  className="step-header"
+                  onClick={() => toggleStep(step.id)}
+                >
                   <h2>{step.icon} {step.title}</h2>
-                  <span className="expand-icon">{activeId === step.id ? '−' : '+'}</span>
+                  <span className="expand-icon">
+                    {activeId === step.id ? '−' : '+'}
+                  </span>
                 </div>
                 <div className={`step-details ${activeId === step.id ? 'active' : ''}`}>
                   {step.content}

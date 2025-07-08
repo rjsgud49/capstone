@@ -216,6 +216,8 @@
     border-radius: 8px;
     margin-top: 10px;
     white-space: pre-wrap;
+    height: 800px;
+    overflow-y: auto;
 }
 
 .checklist-items {
