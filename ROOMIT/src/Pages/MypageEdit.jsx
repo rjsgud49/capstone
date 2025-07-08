@@ -134,7 +134,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
         };
     }, []); // currentUser 제거
  // ✅ 의존성 단순화
-
+    
     useEffect(() => {
         return () => {
             if (formData.avatar && formData.avatar.startsWith('blob:')) {
