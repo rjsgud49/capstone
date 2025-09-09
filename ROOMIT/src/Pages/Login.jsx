@@ -68,11 +68,10 @@
 
                 alert('로그인 성공!');
                 navigate('/');
-            } catch (error) {
-                const errorMessage =
-                    error.response?.data?.message || '❌ 로그인에 실패했습니다. 아이디나 비밀번호를 확인해주세요.';
+            } catch  {
+                const errorMessage =  '❌ 로그인에 실패했습니다. 아이디나 비밀번호를 확인해주세요.';
                 alert(errorMessage);
-                console.error('로그인 에러:', error);
+                // console.error('로그인 에러:', error);
             }
         };
 
