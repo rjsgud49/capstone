@@ -10,17 +10,13 @@ const categoryKeyMap = {
   "AI 추천": "aiRecommendation",
 };
 
-// ✅ 범위 파싱 함수
 const parseRange = (text) => {
   if (text.includes("이상")) {
     const num = parseInt(text);
     return { min: num, max: Infinity };
   }
   if (text.includes("-")) {
-    const [min, max] = text
-      .replace(/[^0-9-]/g, "")
-      .split("-")
-      .map(Number);
+    const [min, max] = text.replace(/[^0-9-]/g, "").split("-").map(Number);
     return { min, max };
   }
   return null;
@@ -81,7 +77,6 @@ const FilterFooter = ({ onReset, onApply }) => (
   </div>
 );
 
-// ✅ selectedFilters 배열 → 객체로 변환
 const getFilterObject = (filters) => {
   const result = {};
   filters.forEach(({ category, value }) => {
@@ -90,15 +85,38 @@ const getFilterObject = (filters) => {
   return result;
 };
 
-const FilterPanel = ({ open, setOpen, filters, datas, onFilterChange }) => {
+const FilterPanel = ({
+  open,
+  setOpen,
+  filters,
+  datas,
+  onFilterChange,
+  onRegionChange,   // ✅ 추가
+  currentRegion = "상관없음", // ✅ 추가
+}) => {
   const [selectedFiltersLS, setSelectedFiltersLS] = useState([]);
+
+  // ✅ 초기 진입 시 currentRegion을 선택 상태에 반영
+  useEffect(() => {
+    setSelectedFiltersLS((prev) => {
+      // 기존에 지역이 없으면 추가, 있으면 값만 맞추기
+      const hasRegion = prev.some((f) => f.category === "지역");
+      const next = hasRegion
+        ? prev.map((f) =>
+          f.category === "지역" ? { category: "지역", value: currentRegion } : f
+        )
+        : [{ category: "지역", value: currentRegion }, ...prev];
+      localStorage.setItem("selectedFiltersLS", JSON.stringify(next));
+      return next;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentRegion]);
 
   const togglePanel = () => setOpen((prev) => !prev);
 
   const filterDatas = useCallback(
     (filtersObj) => {
       if (!Array.isArray(datas)) return [];
-
       return datas.filter((data) =>
         filters.every(({ category }) => {
           const selectedValue = filtersObj[category];
@@ -107,21 +125,17 @@ const FilterPanel = ({ open, setOpen, filters, datas, onFilterChange }) => {
           const dataKey = categoryKeyMap[category];
           const dataValue = data[dataKey];
 
-          // ✅ 가격대 처리
           if (category === "가격대") {
             const range = parseRange(selectedValue);
             if (!range) return true;
             return dataValue >= range.min && dataValue < range.max;
           }
-
-          // ✅ 면적 처리
           if (category === "면적") {
             const range = parseRange(selectedValue);
             if (!range) return true;
             return dataValue >= range.min && dataValue < range.max;
           }
 
-          // ✅ 기본 문자열 비교
           if (typeof dataValue === "string") {
             return dataValue.includes(selectedValue);
           } else {
@@ -155,6 +169,12 @@ const FilterPanel = ({ open, setOpen, filters, datas, onFilterChange }) => {
         }
       }
 
+      // ✅ 지역이 변경되면 부모에 통지 → 서버 재조회
+      if (category === "지역" && typeof onRegionChange === "function") {
+        const nextRegion = value || "상관없음";
+        onRegionChange(nextRegion);
+      }
+
       localStorage.setItem("selectedFiltersLS", JSON.stringify(updated));
       return updated;
     });
@@ -163,6 +183,8 @@ const FilterPanel = ({ open, setOpen, filters, datas, onFilterChange }) => {
   const clearFilters = () => {
     setSelectedFiltersLS([]);
     localStorage.removeItem("selectedFiltersLS");
+    // ✅ 초기화 시 지역도 상관없음으로 되돌리며 전체 재조회
+    if (typeof onRegionChange === "function") onRegionChange("상관없음");
   };
 
   const handleApply = () => togglePanel();

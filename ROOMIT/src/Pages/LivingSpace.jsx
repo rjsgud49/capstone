@@ -10,16 +10,14 @@ import React, { useState, useEffect, useCallback } from "react";
 import { fetchAllLivingSpace } from "../services/livingSpace"; // ✅ API 함수 불러오기
 
 const filterOptions = [
-  { category: "가구 유형", options: ["상관없음", "아파트", "원룸", "단독/다가구"] },
+  { category: "가구 유형", options: ["상관없음", "원룸", "단독/다가구"] },
   {
     category: "지역",
-    options: // prettier-ignore
-      [
-        "상관없음", "서울", "경기", "인천", "부산", "대구", "광주", "대전", "울산",
-        "세종", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주",
-      ],
+    options: [
+      "상관없음", "서울", "경기", "인천", "부산", "대구", "광주", "대전", "울산",
+      "세종", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주",
+    ],
   },
-  // { category: "최대 인원", options: ["상관없음", "1명", "2명", "3명", "4명", "5명 이상"] },
   { category: "면적", options: ["상관없음", "20-29평", "30-39평", "40-49평", "50평 이상"] },
   { category: "가격대", options: ["상관없음", "100-500만원", "500-1000만원", "1000만원 이상"] },
   { category: "AI 추천", options: ["학교 근처 순", "직장 근처 순", "편의시설 근처 순"] },
@@ -32,35 +30,43 @@ const LivingSpace = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const loadLivingSpace = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await fetchAllLivingSpace("상인동");
-      setLivingSpaces(data);
-      setFilteredLivingSpaces(data);
-    } catch {
-      setError("데이터 불러오기 실패");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  // ✅ 지역 상태 (기본: 상관없음 = 전체 조회)
+  const [region, setRegion] = useState("상관없음");
+
+  const loadLivingSpace = useCallback(
+    async (regionArg = region) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        // ✅ "상관없음"이면 전체 조회, 아니면 해당 지역만 조회하도록 호출
+        const param = regionArg === "상관없음" ? undefined : regionArg;
+        const data = await fetchAllLivingSpace(param);
+        setLivingSpaces(Array.isArray(data) ? data : []);
+        setFilteredLivingSpaces(Array.isArray(data) ? data : []);
+      } catch (e) {
+        setError("데이터 불러오기 실패");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [region]
+  );
 
   useEffect(() => {
-    loadLivingSpace();
+    // 초기 로드: 전체
+    loadLivingSpace("상관없음");
   }, [loadLivingSpace]);
 
-  const togglePanel = () => {
-    setOpen((prev) => !prev);
+  // ✅ FilterPanel이 지역을 바꾸면 서버에서 재조회
+  const handleRegionChange = (nextRegion) => {
+    setRegion(nextRegion);
+    loadLivingSpace(nextRegion);
   };
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  const togglePanel = () => setOpen((prev) => !prev);
 
-  if (error) {
-    return <RetryPage errorMessage={error} onRetry={loadLivingSpace} />;
-  }
+  if (isLoading) return <Loading />;
+  if (error) return <RetryPage errorMessage={error} onRetry={() => loadLivingSpace()} />;
 
   return (
     <div className="livingSpace">
@@ -82,15 +88,18 @@ const LivingSpace = () => {
         datas={livingSpaces}
         onFilterChange={setFilteredLivingSpaces}
         showFilterButton={false}
+        // ✅ 추가: 지역 변경 시 부모에게 알려주기
+        onRegionChange={handleRegionChange}
+        currentRegion={region}
       />
 
       <div className="livingSpace-list">
-        {console.log("📊 filteredLivingSpaces 상태:", filteredLivingSpaces)}
-
         {Array.isArray(filteredLivingSpaces) &&
           filteredLivingSpaces
             .filter((item) => item && item.name && item.address)
-            .map((item, index) => <LivingSpaceItem key={index} data={item} index={index} />)}
+            .map((item, index) => (
+              <LivingSpaceItem key={index} data={item} index={index} />
+            ))}
       </div>
     </div>
   );

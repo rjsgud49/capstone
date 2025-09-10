@@ -6,12 +6,13 @@ const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-});
+}); 
 
 export const fetchAllProfiles = async () => {
     const response = await axios.get('/api/user/all/full');
     return response.data;
 };
+
 
 export const fetchProfile = async (userId) => {
     try {
