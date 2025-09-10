@@ -5,69 +5,142 @@ import {
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import './css/MyPages.css';
-import { fetchProfile, submitProfile,  uploadAvatar } from '../services/user';
-// updateMatching,
-const MyEditPage = ({ currentUser, updateUserData }) => {
-    const navigate = useNavigate();
+import { fetchProfile, submitProfile, uploadAvatar } from '../services/user';
 
-    // ✅ userId 확실하게 가져오기
-    const getUserId = () => {
-        if (currentUser?.userId) return currentUser.userId;
-        if (currentUser?.id) return currentUser.id;
+// ===================== 공통 유틸 =====================
+// truthy(또는 0) 값만 덮어쓰는 머지(빈 문자열/undefined/null로 기존값을 지우지 않음)
+const isMergeableValue = (v) =>
+    v !== undefined && v !== null && (v !== '' || v === 0);
 
-        // 로컬스토리지에서 직접 가져오기
-        const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
-            const parsedUser = JSON.parse(storedUser);
-            return parsedUser.userId || parsedUser.id;
+const mergeTruthy = (base, incoming) => {
+    const out = { ...base };
+    for (const k in incoming) {
+        const v = incoming[k];
+        if (v && typeof v === 'object' && !Array.isArray(v)) {
+            out[k] = mergeTruthy(out[k] || {}, v);
+        } else if (isMergeableValue(v)) {
+            out[k] = v;
         }
-        return null;
-    };
+    }
+    return out;
+};
 
-    const userId = getUserId();
-
-    const profileData = {
-        ...currentUser,
-        ...(currentUser?.profile || {}),
-    };
-
-    const [formData, setFormData] = useState({
-        userId: userId || '', // ✅ 확실한 userId 설정
-        name: profileData.name || '',
-        age: profileData.age || '',
-        job: profileData.job || '',
-        avatar: profileData.avatar || '',
+// currentUser / localStorage / 기본값을 합쳐 초기 formData 구성
+const buildInitialFormData = (rawUser) => {
+    const base = {
+        userId: '',
+        name: '',
+        age: '',
+        job: '',
+        avatar: '',
         avatarFile: null,
-        gender: profileData.gender || '',
-        location: profileData.location || '',
-        introduction: profileData.introduction || '',
-        interests: profileData.interests || [],
-        idealRoommate: profileData.idealRoommate || '',
-        mbti: profileData.mbti || '',
-        smoking: profileData.smoking || '',
-        drinking: profileData.drinking || '',
-        matching: profileData.matching || false,
-        lifestyle: {
-            wakeUpTime: profileData.wakeUpTime || '',
-            sleepTime: profileData.sleepTime || '',
-            dayNightPreference: profileData.dayNightType || '',
-        },
-        habits: currentUser?.habits || {
+        gender: '',
+        location: '',
+        introduction: '',
+        interests: [],
+        idealRoommate: '',
+        mbti: '',
+        smoking: '',
+        drinking: '',
+        matching: false,
+        lifestyle: { wakeUpTime: '', sleepTime: '', dayNightPreference: '' },
+        habits: {
             food: { mealTime: '', kitchenUse: '', cookingFrequency: '' },
             cleaning: { cleanLevel: '', cleaningFrequency: '', sharedSpaceManagement: '' },
             noiseSensitivity: { sensitivityLevel: '', sleepNoisePreference: '', musicTVVolume: '' },
             petPreferences: { allowed: '', petType: '', allergy: '' },
         },
+    };
+
+    const safeParse = (s) => {
+        try { return JSON.parse(s); } catch { return null; }
+    };
+
+    const storedUser = safeParse(localStorage.getItem('currentUser'));
+
+    const flatten = (u) => {
+        if (!u) return {};
+        const p = u.profile || {};
+        return {
+            userId: u.userId || u.id || p.userId || p.id || '',
+            name: u.name ?? p.name,
+            age: u.age ?? p.age,
+            job: u.job ?? p.job,
+            avatar: u.avatar ?? p.avatar,
+            gender: u.gender ?? p.gender,
+            location: u.location ?? p.location,
+            introduction: u.introduction ?? p.introduction,
+            interests: u.interests ?? p.interests,
+            idealRoommate: u.idealRoommate ?? p.idealRoommate,
+            mbti: u.mbti ?? p.mbti,
+            smoking: u.smoking ?? p.smoking,
+            drinking: u.drinking ?? p.drinking,
+            matching: u.matching ?? p.matching,
+            wakeUpTime: u.wakeUpTime ?? p.wakeUpTime,
+            sleepTime: u.sleepTime ?? p.sleepTime,
+            dayNightType: u.dayNightType ?? p.dayNightType,
+            habits: u.habits ?? p.habits,
+        };
+    };
+
+    const fromCurrent = flatten(rawUser);
+    const fromStored = flatten(storedUser);
+
+    const normalized = (o) => ({
+        ...o,
+        lifestyle: {
+            wakeUpTime: o.wakeUpTime || '',
+            sleepTime: o.sleepTime || '',
+            dayNightPreference: o.dayNightType || o.dayNightPreference || '',
+        },
     });
+
+    return mergeTruthy(
+        base,
+        normalized(mergeTruthy(fromStored, fromCurrent))
+    );
+};
+
+// 중첩 경로 접근 유틸
+const getNestedValue = (obj, path) =>
+    (path.split('.').reduce((cur, key) => (cur && cur[key] !== undefined ? cur[key] : ''), obj) ?? '') || '';
+
+const MyEditPage = ({ currentUser, updateUserData }) => {
+    const navigate = useNavigate();
+
+    // ✅ userId 안전하게 가져오기
+    const getUserId = () => {
+        if (currentUser?.userId) return currentUser.userId;
+        if (currentUser?.id) return currentUser.id;
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+            try {
+                const parsedUser = JSON.parse(storedUser);
+                return parsedUser.userId || parsedUser.id || parsedUser?.profile?.userId || parsedUser?.profile?.id;
+            } catch {
+                return null;
+            }
+        }
+        return null;
+    };
+
+    // ✅ 초기값: currentUser & localStorage를 합쳐 세팅
+    const initial = buildInitialFormData(currentUser);
+    const [formData, setFormData] = useState(() => ({
+        ...initial,
+        userId: initial.userId || getUserId() || '', // 최종 보정
+    }));
+
+    const [interestsInput, setInterestsInput] = useState(() =>
+        Array.isArray(initial.interests) ? initial.interests.join(', ') : ''
+    );
 
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const fileInputRef = useRef(null);
-    const [interestsInput, setInterestsInput] = useState('');
 
-
-
+    // ✅ 마운트 시 서버에서 프로필 로딩 후 truthy 병합
     useEffect(() => {
         let isMounted = true;
 
@@ -82,83 +155,75 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
             setError(null);
             try {
                 const data = await fetchProfile(currentUserId);
-                if (isMounted) {
-                    const initData = {
-                        userId: currentUserId,
-                        name: data.name || '',
-                        age: data.age || '',
-                        job: data.job || '',
-                        avatar: data.avatar || '',
-                        avatarFile: null,
-                        gender: data.gender || '',
-                        location: data.location || '',
-                        introduction: data.introduction || '',
-                        interests: data.interests || [],
-                        idealRoommate: data.idealRoommate || '',
-                        mbti: data.mbti || '',
-                        smoking: data.smoking || '',
-                        drinking: data.drinking || '',
-                        matching: data.matching ?? false,
-                        lifestyle: {
-                            wakeUpTime: data.wakeUpTime || '',
-                            sleepTime: data.sleepTime || '',
-                            dayNightPreference: data.dayNightType || '',
-                        },
-                        habits: data.habits || {
-                            food: { mealTime: '', kitchenUse: '', cookingFrequency: '' },
-                            cleaning: { cleanLevel: '', cleaningFrequency: '', sharedSpaceManagement: '' },
-                            noiseSensitivity: { sensitivityLevel: '', sleepNoisePreference: '', musicTVVolume: '' },
-                            petPreferences: { allowed: '', petType: '', allergy: '' },
-                        },
-                    };
+                if (!isMounted) return;
 
-                    setFormData(initData);
-                    setInterestsInput((data.interests || []).join(', '));
-                }
-            } catch (error) {
-                console.error('프로필 로딩 실패:', error);
+                const incoming = {
+                    userId: currentUserId,
+                    name: data.name,
+                    age: data.age,
+                    job: data.job,
+                    avatar: data.avatar,
+                    gender: data.gender,
+                    location: data.location,
+                    introduction: data.introduction,
+                    interests: data.interests,
+                    idealRoommate: data.idealRoommate,
+                    mbti: data.mbti,
+                    smoking: data.smoking,
+                    drinking: data.drinking,
+                    matching: data.matching,
+                    wakeUpTime: data.wakeUpTime,
+                    sleepTime: data.sleepTime,
+                    dayNightType: data.dayNightType,
+                    habits: data.habits,
+                };
+
+                const merged = mergeTruthy(formData, {
+                    ...incoming,
+                    lifestyle: {
+                        wakeUpTime: incoming.wakeUpTime,
+                        sleepTime: incoming.sleepTime,
+                        dayNightPreference: incoming.dayNightType,
+                    },
+                });
+
+                setFormData(merged);
+                setInterestsInput(Array.isArray(merged.interests) ? merged.interests.join(', ') : '');
+            } catch (err) {
+                console.error('프로필 로딩 실패:', err);
                 if (isMounted) {
                     setError('프로필을 불러올 수 없습니다. 서버에 연결할 수 없거나 네트워크 문제가 발생했습니다.');
                 }
             } finally {
-                if (isMounted) {
-                    setIsLoading(false);
-                }
+                if (isMounted) setIsLoading(false);
             }
         };
 
         loadProfile();
+        return () => { isMounted = false; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // 의존성 단순화
 
-        return () => {
-            isMounted = false;
-        };
-    }, []); // currentUser 제거
- // ✅ 의존성 단순화
-    
+    // ✅ blob URL 정리
     useEffect(() => {
         return () => {
-            if (formData.avatar && formData.avatar.startsWith('blob:')) {
+            if (formData.avatar && typeof formData.avatar === 'string' && formData.avatar.startsWith('blob:')) {
                 URL.revokeObjectURL(formData.avatar);
             }
         };
     }, [formData.avatar]);
 
+    // ===================== 핸들러들 =====================
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleLifestyleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            lifestyle: {
-                ...prev.lifestyle,
-                [name]: value,
-            },
+            lifestyle: { ...prev.lifestyle, [name]: value },
         }));
     };
 
@@ -167,18 +232,15 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
             ...prev,
             habits: {
                 ...prev.habits,
-                [category]: {
-                    ...prev.habits[category],
-                    [field]: value,
-                },
+                [category]: { ...prev.habits[category], [field]: value },
             },
         }));
     };
 
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
         if (file) {
-            if (formData.avatar && formData.avatar.startsWith('blob:')) {
+            if (formData.avatar && typeof formData.avatar === 'string' && formData.avatar.startsWith('blob:')) {
                 URL.revokeObjectURL(formData.avatar);
             }
             setFormData((prev) => ({
@@ -189,9 +251,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
         }
     };
 
-    const handleAvatarClick = () => {
-        fileInputRef.current.click();
-    };
+    const handleAvatarClick = () => fileInputRef.current?.click();
 
     const submitInterests = async (userId, interests) => {
         const token = localStorage.getItem('accessToken');
@@ -201,12 +261,9 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({
-                userId,
-                interests,
-            }),
+            body: JSON.stringify({ userId, interests }),
         });
 
         if (!res.ok) {
@@ -214,18 +271,13 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
             throw new Error(`관심사 저장 실패: ${res.status} ${errorText}`);
         }
 
-        // ✅ 서버가 text 응답일 경우
         const resultText = await res.text();
         console.log('✅ 관심사 저장 응답:', resultText);
-
         return resultText;
     };
 
-
-
     const handleSave = async () => {
         const currentUserId = formData.userId || getUserId();
-
         if (!currentUserId) {
             alert('userId가 비어 있습니다! 로그인 상태를 확인하세요.');
             return;
@@ -254,14 +306,14 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                 avatarUrl = await uploadAvatar(formData.avatarFile);
             }
 
-            const profileData = {
+            const profilePayload = {
                 userId: currentUserId,
                 name: formData.name || '',
                 age: parseInt(formData.age, 10) || 0,
                 gender: formData.gender || '',
                 location: formData.location || '',
                 job: formData.job || '',
-                introduction: formData.introduction || '',  // ✅ 여기 추가
+                introduction: formData.introduction || '',
                 idealRoommate: formData.idealRoommate || '',
                 mbti: formData.mbti || '',
                 dayNightType: formData.lifestyle?.dayNightPreference || '',
@@ -274,15 +326,13 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                 sleepTime: formData.lifestyle?.sleepTime || '',
             };
 
-
             console.log('===== ✅ 프로필 저장 =====');
-            await submitProfile(profileData);
+            await submitProfile(profilePayload);
 
             console.log('===== ✅ 관심사 저장 =====');
             await submitInterests(currentUserId, formData.interests);
 
-            updateUserData({ ...profileData, interests: formData.interests });
-
+            updateUserData({ ...profilePayload, interests: formData.interests });
             navigate('/mypages');
         } catch (error) {
             console.error('===== ❌ 저장 실패 =====', error);
@@ -292,36 +342,26 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
         }
     };
 
-    // const handleToggleMatching = async () => {
-    //     const newMatchingState = !formData.matching;
-    //     const updatedFormData = { ...formData, matching: newMatchingState };
-
-    //     setFormData(updatedFormData);
-    //     updateUserData(updatedFormData);
-
-    //     // ✅ userId 사용으로 통일
-    //     const currentUserId = getUserId();
-
-    //     try {
-    //         await updateMatching(currentUserId, newMatchingState); // ✅ userId 사용
-    //         alert(newMatchingState ? '미팅 페이지에 공개되었습니다!' : '미팅 페이지에서 비공개되었습니다!');
-    //     } catch (error) {
-    //         console.error('매칭 상태 업데이트 실패:', {
-    //             message: error.message,
-    //             stack: error.stack,
-    //             userId: currentUserId, // ✅ userId 사용
-    //         });
-    //         alert(`매칭 상태 업데이트에 실패했습니다: ${error.message}`);
-    //         setFormData({ ...formData, matching: !newMatchingState });
-    //         updateUserData({ ...formData, matching: !newMatchingState });
-    //     }
-    // };
+    // interestsInput ↔ formData.interests 동기화(보기 좋게 유지)
     useEffect(() => {
-        setInterestsInput(
-            Array.isArray(formData.interests) ? formData.interests.join(', ') : ''
-        );
+        setInterestsInput(Array.isArray(formData.interests) ? formData.interests.join(', ') : '');
     }, [formData.interests]);
 
+    // ===================== 렌더링 =====================
+    if (isLoading) {
+        return <div className="loading">프로필을 불러오는 중...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="error">
+                {error}
+                <button onClick={() => window.location.reload()} style={{ marginLeft: '10px' }}>
+                    다시 시도
+                </button>
+            </div>
+        );
+    }
 
     const lifestyleCategories = [
         {
@@ -366,30 +406,8 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
         },
     ];
 
-    const getNestedValue = (obj, path) => {
-        return path.split('.').reduce((current, key) => {
-            return current && current[key] !== undefined ? current[key] : '';
-        }, obj) || '';
-    };
-
-    if (isLoading) {
-        return <div className="loading">프로필을 불러오는 중...</div>;
-    }
-
-    if (error) {
-        return (
-            <div className="error">
-                {error}
-                <button onClick={() => window.location.reload()} style={{ marginLeft: '10px' }}>
-                    다시 시도
-                </button>
-            </div>
-        );
-    }
-
     return (
         <>
-            {/* <Header currentUser={currentUser} setCurrentUser={setCurrentUser} /> */}
             <div className="meeting-user-detail">
                 <div style={{ textAlign: 'right', marginBottom: '10px' }}>
                     <Link to="/Mypages" className="btn-edit-profile">
@@ -426,6 +444,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                             />
                         </div>
                     </div>
+
                     <div className="profile-basic-info">
                         <input
                             type="text"
@@ -455,6 +474,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                             placeholder="나이"
                             className="input-field"
                         />
+
                         <div className="profile-job-location">
                             <div className="profile-job">
                                 <Briefcase size={40} />
@@ -499,7 +519,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                     <textarea
                         name="interests"
                         value={interestsInput}
-                        onChange={(e) => setInterestsInput(e.target.value)} // 실시간으로 split 하지 않음
+                        onChange={(e) => setInterestsInput(e.target.value)}
                         onBlur={() => {
                             const interestsArray = interestsInput
                                 .split(',')
@@ -509,31 +529,27 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                             setFormData((prev) => {
                                 const updated = { ...prev, interests: interestsArray };
 
-                                // 🔥 로컬스토리지 반영
-                                const storedUser = localStorage.getItem('currentUser');
-                                if (storedUser) {
-                                    const parsed = JSON.parse(storedUser);
-                                    const updatedUser = {
-                                        ...parsed,
-                                        profile: {
-                                            ...(parsed.profile || {}),
-                                            interests: interestsArray,
-                                        },
-                                    };
-                                    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                                // 로컬스토리지 반영
+                                const s = localStorage.getItem('currentUser');
+                                if (s) {
+                                    try {
+                                        const parsed = JSON.parse(s);
+                                        const updatedUser = {
+                                            ...parsed,
+                                            profile: { ...(parsed.profile || {}), interests: interestsArray },
+                                        };
+                                        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                                    } catch { }
                                 }
 
                                 return updated;
                             });
                         }}
-
                         className="textarea-field"
                         rows={2}
-                        placeholder="게임, 운동, 산책 이런 식으로 쉼표(,)로 구분해 주세요"
+                        placeholder="게임, 운동, 산책 등 쉼표(,)로 구분해 주세요"
                     />
-
                 </section>
-
 
                 <section className="meetprofile-section">
                     <h2>이상적인 룸메이트</h2>
@@ -565,6 +581,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                                 ))}
                             </select>
                         </div>
+
                         <div className="lifestyle-item">
                             <Sun size={40} />
                             <span>기상 시간</span>
@@ -576,6 +593,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                                 className="input-field"
                             />
                         </div>
+
                         <div className="lifestyle-item">
                             <Moon size={40} />
                             <span>취침 시간</span>
@@ -587,6 +605,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                                 className="input-field"
                             />
                         </div>
+
                         <div className="lifestyle-item">
                             <Calendar size={40} />
                             <span>밤낮 성향</span>
@@ -601,6 +620,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                                 <option value="밤">밤</option>
                             </select>
                         </div>
+
                         <div className="lifestyle-item">
                             <Coffee size={40} />
                             <span>흡연 여부</span>
@@ -616,6 +636,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                                 <option value="자주">자주</option>
                             </select>
                         </div>
+
                         <div className="lifestyle-item">
                             <Coffee size={40} />
                             <span>음주</span>
@@ -634,7 +655,48 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                     </div>
                 </section>
 
-                {lifestyleCategories.map((category, idx) => (
+                {[
+                    {
+                        title: '🍽️ 식생활 & 주방 관련',
+                        category: 'food',
+                        items: [
+                            { label: '식사 시간', field: 'mealTime', type: 'select', options: ['불규칙적', '아침형', '저녁형', '밤형'] },
+                            { label: '주방 사용', field: 'kitchenUse', type: 'select', options: ['거의 안함', '가끔', '자주', '매일'] },
+                            { label: '요리 빈도', field: 'cookingFrequency', type: 'select', options: ['거의 안함', '가끔', '자주', '매일'] },
+                        ],
+                        icon: <Utensils size={40} />,
+                    },
+                    {
+                        title: '🧹 청결 및 정리 습관',
+                        category: 'cleaning',
+                        items: [
+                            { label: '청결 수준', field: 'cleanLevel', type: 'select', options: ['낮음', '보통', '높음', '매우 높음'] },
+                            { label: '청소 주기', field: 'cleaningFrequency', type: 'select', options: ['필요할 때만', '주 1회', '주 2-3회', '매일'] },
+                            { label: '공용공간 관리', field: 'sharedSpaceManagement', type: 'select', options: ['개인공간만 관리', '가끔 정리', '공용공간 정리 참여', '적극적으로 관리'] },
+                        ],
+                        icon: <Home size={40} />,
+                    },
+                    {
+                        title: '🔊 소음 민감도',
+                        category: 'noiseSensitivity',
+                        items: [
+                            { label: '소음 민감도', field: 'sensitivityLevel', type: 'select', options: ['둔감', '보통', '민감', '매우 민감'] },
+                            { label: '취침시 소음', field: 'sleepNoisePreference', type: 'select', options: ['조용해야 함', '백색소음 선호', '약간의 소음 허용', '소음에 둔감'] },
+                            { label: '음악/TV 볼륨', field: 'musicTVVolume', type: 'select', options: ['낮은 볼륨', '중간 볼륨', '높은 볼륨', '헤드폰 사용'] },
+                        ],
+                        icon: <Volume2 size={40} />,
+                    },
+                    {
+                        title: '🐶 애완동물',
+                        category: 'petPreferences',
+                        items: [
+                            { label: '반려동물 허용 여부', field: 'allowed', type: 'select', options: ['허용 안함', '일부 허용', '대부분 허용', '모두 허용'] },
+                            { label: '선호 반려동물', field: 'petType', type: 'text' },
+                            { label: '반려동물 알레르기', field: 'allergy', type: 'select', options: ['없음', '경미함', '중간', '심함'] },
+                        ],
+                        icon: <Cat size={40} />,
+                    },
+                ].map((category, idx) => (
                     <section key={idx} className="meetprofile-section lifestyle-details">
                         <h2>{category.title}</h2>
                         <div className="lifestyle-grid">
@@ -676,18 +738,6 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                     >
                         {isSaving ? '저장 중...' : '프로필 저장'}
                     </button>
-
-                    {/* <div className="toggle-container">
-                        <span className="toggle-label">매칭 페이지 공개</span>
-                        <label className="toggle-switch">
-                            <input
-                                type="checkbox"
-                                checked={formData.matching}
-                                onChange={handleToggleMatching}
-                            />
-                            <span className="toggle-slider"></span>
-                        </label>
-                    </div> */}
                 </div>
             </div>
         </>
