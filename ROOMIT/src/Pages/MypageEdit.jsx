@@ -68,74 +68,70 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
 
 
 
+    // 맨 위에 보조 매핑 함수 하나 추가
+    const mapServerToForm = (uid, data) => ({
+        userId: uid || '',
+        name: data?.name ?? '',
+        age: data?.age ?? '',
+        job: data?.job ?? '',
+        avatar: data?.avatar ?? '',
+        gender: data?.gender ?? '',
+        location: data?.location ?? '',
+        introduction: data?.introduction ?? '',
+        interests: Array.isArray(data?.interests) ? data.interests : [],
+        idealRoommate: data?.idealRoommate ?? '',
+        mbti: data?.mbti ?? '',
+        smoking: data?.smoking ?? '',
+        drinking: data?.drinking ?? '',
+        matching: data?.matching ?? false,
+        lifestyle: {
+            wakeUpTime: data?.wakeUpTime ?? '',
+            sleepTime: data?.sleepTime ?? '',
+            dayNightPreference: data?.dayNightType ?? '',
+        },
+        habits: data?.habits ?? {
+            food: { mealTime: '', kitchenUse: '', cookingFrequency: '' },
+            cleaning: { cleanLevel: '', cleaningFrequency: '', sharedSpaceManagement: '' },
+            noiseSensitivity: { sensitivityLevel: '', sleepNoisePreference: '', musicTVVolume: '' },
+            petPreferences: { allowed: '', petType: '', allergy: '' },
+        },
+    });
+
     useEffect(() => {
-  let isMounted = true;
+        let isMounted = true;
 
-  const currentUserId = getUserId();
-  if (!currentUserId) {
-    setError('사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.');
-    return;
-  }
-
-  const loadProfile = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await fetchProfile(currentUserId);
-
-      if (!isMounted) return;
-
-      // 서버 모델 → 폼 모델 키 변환 + 정규화
-      const incoming = {
-        userId: currentUserId,
-        name: data.name,
-        age: data.age,
-        job: data.job,
-        avatar: data.avatar,
-        gender: data.gender,
-        location: data.location,
-        introduction: data.introduction,
-        interests: data.interests,
-        idealRoommate: data.idealRoommate,
-        mbti: data.mbti,
-        smoking: data.smoking,
-        drinking: data.drinking,
-        matching: data.matching,
-        wakeUpTime: data.wakeUpTime,
-        sleepTime: data.sleepTime,
-        dayNightType: data.dayNightType,
-        habits: data.habits,
-      };
-
-      const merged = mergeTruthy(
-        formData,
-        {
-          ...incoming,
-          lifestyle: {
-            wakeUpTime: incoming.wakeUpTime,
-            sleepTime: incoming.sleepTime,
-            dayNightPreference: incoming.dayNightType,
-          },
+        const currentUserId = getUserId();
+        if (!currentUserId) {
+            setError('사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.');
+            return;
         }
-      );
 
-      setFormData(merged);
-      setInterestsInput(
-        Array.isArray(merged.interests) ? merged.interests.join(", ") : ""
-      );
+        const loadProfile = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const data = await fetchProfile(currentUserId);
+                if (!isMounted) return;
 
-    } catch (error) {
-      console.error('프로필 로딩 실패:', error);
-      if (isMounted) setError('프로필을 불러올 수 없습니다. 서버에 연결할 수 없거나 네트워크 문제가 발생했습니다.');
-    } finally {
-      if (isMounted) setIsLoading(false);
-    }
-  };
+                // ❗ 병합하지 말고 "서버값으로 그대로 덮어쓰기"
+                const next = mapServerToForm(currentUserId, data);
+                setFormData(next);
+                setInterestsInput(next.interests.join(', '));
+            } catch (error) {
+                console.error('프로필 로딩 실패:', error);
+                if (isMounted) {
+                    setError('프로필을 불러올 수 없습니다. 서버에 연결할 수 없거나 네트워크 문제가 발생했습니다.');
+                }
+            } finally {
+                if (isMounted) setIsLoading(false);
+            }
+        };
 
-  loadProfile();
-  return () => { isMounted = false; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, []); // 의존성 단순화 유지
+        loadProfile();
+        return () => { isMounted = false; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
  // currentUser 제거
  // ✅ 의존성 단순화
     
