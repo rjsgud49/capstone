@@ -18,7 +18,8 @@ jobs:
           key: ${{ secrets.AWS_PRIVATE_KEY }}
           script: |
             set -e
-            cd ~/front/roomit
+            
+            cd ~/front/ROOMIT
 
             echo "📦 Git pull"
             git pull origin main
