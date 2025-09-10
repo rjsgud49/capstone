@@ -69,33 +69,38 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
 
 
     // 맨 위에 보조 매핑 함수 하나 추가
-    const mapServerToForm = (uid, data) => ({
-        userId: uid || '',
-        name: data?.name ?? '',
-        age: data?.age ?? '',
-        job: data?.job ?? '',
-        avatar: data?.avatar ?? '',
-        gender: data?.gender ?? '',
-        location: data?.location ?? '',
-        introduction: data?.introduction ?? '',
-        interests: Array.isArray(data?.interests) ? data.interests : [],
-        idealRoommate: data?.idealRoommate ?? '',
-        mbti: data?.mbti ?? '',
-        smoking: data?.smoking ?? '',
-        drinking: data?.drinking ?? '',
-        matching: data?.matching ?? false,
-        lifestyle: {
-            wakeUpTime: data?.wakeUpTime ?? '',
-            sleepTime: data?.sleepTime ?? '',
-            dayNightPreference: data?.dayNightType ?? '',
-        },
-        habits: data?.habits ?? {
-            food: { mealTime: '', kitchenUse: '', cookingFrequency: '' },
-            cleaning: { cleanLevel: '', cleaningFrequency: '', sharedSpaceManagement: '' },
-            noiseSensitivity: { sensitivityLevel: '', sleepNoisePreference: '', musicTVVolume: '' },
-            petPreferences: { allowed: '', petType: '', allergy: '' },
-        },
-    });
+    const mapServerToForm = (uid, data) => {
+        const p = data?.profile ?? {};            // 핵심: profile로부터 읽기
+        return {
+            userId: uid || data?.userId || '',
+            name: p.name ?? '',
+            age: p.age ?? '',
+            job: p.job ?? '',
+            avatar: p.avatar ?? '',
+            gender: p.gender ?? '',
+            location: p.location ?? '',
+            introduction: p.introduction ?? '',
+            interests: Array.isArray(data?.interests) ? data.interests : [], // interests는 루트
+            idealRoommate: p.idealRoommate ?? '',
+            mbti: p.mbti ?? '',
+            smoking: p.smoking ?? '',
+            drinking: p.drinking ?? '',
+            matching: p.matching ?? false,          // 백엔드에 없으면 false로
+            lifestyle: {
+                wakeUpTime: p.wakeUpTime ?? '',
+                sleepTime: p.sleepTime ?? '',
+                dayNightPreference: p.dayNightType ?? '',
+            },
+            // 서버가 habits를 별도로 주지 않는다면 기본값 유지
+            habits: {
+                food: { mealTime: '', kitchenUse: '', cookingFrequency: '' },
+                cleaning: { cleanLevel: p.cleanLevel ?? '', cleaningFrequency: '', sharedSpaceManagement: '' },
+                noiseSensitivity: { sensitivityLevel: p.noise ?? '', sleepNoisePreference: '', musicTVVolume: '' },
+                petPreferences: { allowed: '', petType: '', allergy: '' },
+            },
+        };
+    };
+
 
     useEffect(() => {
         let isMounted = true;
