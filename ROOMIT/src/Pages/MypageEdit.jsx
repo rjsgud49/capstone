@@ -104,7 +104,6 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
 
     useEffect(() => {
         let isMounted = true;
-
         const currentUserId = getUserId();
         if (!currentUserId) {
             setError('사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.');
@@ -118,15 +117,12 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                 const data = await fetchProfile(currentUserId);
                 if (!isMounted) return;
 
-                // ❗ 병합하지 말고 "서버값으로 그대로 덮어쓰기"
                 const next = mapServerToForm(currentUserId, data);
                 setFormData(next);
                 setInterestsInput(next.interests.join(', '));
             } catch (error) {
                 console.error('프로필 로딩 실패:', error);
-                if (isMounted) {
-                    setError('프로필을 불러올 수 없습니다. 서버에 연결할 수 없거나 네트워크 문제가 발생했습니다.');
-                }
+                if (isMounted) setError('프로필을 불러올 수 없습니다. 서버 또는 네트워크 문제입니다.');
             } finally {
                 if (isMounted) setIsLoading(false);
             }
@@ -136,6 +132,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
         return () => { isMounted = false; };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
 
  // currentUser 제거
  // ✅ 의존성 단순화
