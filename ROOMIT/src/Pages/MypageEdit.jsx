@@ -7,204 +7,126 @@ import { useNavigate, Link } from 'react-router-dom';
 import './css/MyPages.css';
 import { fetchProfile, submitProfile, uploadAvatar } from '../services/user';
 
-// ===================== 공통 유틸 =====================
-// truthy(또는 0) 값만 덮어쓰는 머지(빈 문자열/undefined/null로 기존값을 지우지 않음)
-const isMergeableValue = (v) =>
-    v !== undefined && v !== null && (v !== '' || v === 0);
-
-const mergeTruthy = (base, incoming) => {
-    const out = { ...base };
-    for (const k in incoming) {
-        const v = incoming[k];
-        if (v && typeof v === 'object' && !Array.isArray(v)) {
-            out[k] = mergeTruthy(out[k] || {}, v);
-        } else if (isMergeableValue(v)) {
-            out[k] = v;
-        }
-    }
-    return out;
+/* ===================== 폼 기본값 ===================== */
+const EMPTY_FORM = {
+    userId: '',
+    name: '',
+    age: '',
+    job: '',
+    avatar: '',
+    avatarFile: null,
+    gender: '',
+    location: '',
+    introduction: '',
+    interests: [],
+    idealRoommate: '',
+    mbti: '',
+    smoking: '',
+    drinking: '',
+    matching: false,
+    lifestyle: { wakeUpTime: '', sleepTime: '', dayNightPreference: '' },
+    habits: {
+        food: { mealTime: '', kitchenUse: '', cookingFrequency: '' },
+        cleaning: { cleanLevel: '', cleaningFrequency: '', sharedSpaceManagement: '' },
+        noiseSensitivity: { sensitivityLevel: '', sleepNoisePreference: '', musicTVVolume: '' },
+        petPreferences: { allowed: '', petType: '', allergy: '' },
+    },
 };
 
-// currentUser / localStorage / 기본값을 합쳐 초기 formData 구성
-const buildInitialFormData = (rawUser) => {
-    const base = {
-        userId: '',
-        name: '',
-        age: '',
-        job: '',
-        avatar: '',
-        avatarFile: null,
-        gender: '',
-        location: '',
-        introduction: '',
-        interests: [],
-        idealRoommate: '',
-        mbti: '',
-        smoking: '',
-        drinking: '',
-        matching: false,
-        lifestyle: { wakeUpTime: '', sleepTime: '', dayNightPreference: '' },
-        habits: {
-            food: { mealTime: '', kitchenUse: '', cookingFrequency: '' },
-            cleaning: { cleanLevel: '', cleaningFrequency: '', sharedSpaceManagement: '' },
-            noiseSensitivity: { sensitivityLevel: '', sleepNoisePreference: '', musicTVVolume: '' },
-            petPreferences: { allowed: '', petType: '', allergy: '' },
-        },
-    };
-
-    const safeParse = (s) => {
-        try { return JSON.parse(s); } catch { return null; }
-    };
-
-    const storedUser = safeParse(localStorage.getItem('currentUser'));
-
-    const flatten = (u) => {
-        if (!u) return {};
-        const p = u.profile || {};
-        return {
-            userId: u.userId || u.id || p.userId || p.id || '',
-            name: u.name ?? p.name,
-            age: u.age ?? p.age,
-            job: u.job ?? p.job,
-            avatar: u.avatar ?? p.avatar,
-            gender: u.gender ?? p.gender,
-            location: u.location ?? p.location,
-            introduction: u.introduction ?? p.introduction,
-            interests: u.interests ?? p.interests,
-            idealRoommate: u.idealRoommate ?? p.idealRoommate,
-            mbti: u.mbti ?? p.mbti,
-            smoking: u.smoking ?? p.smoking,
-            drinking: u.drinking ?? p.drinking,
-            matching: u.matching ?? p.matching,
-            wakeUpTime: u.wakeUpTime ?? p.wakeUpTime,
-            sleepTime: u.sleepTime ?? p.sleepTime,
-            dayNightType: u.dayNightType ?? p.dayNightType,
-            habits: u.habits ?? p.habits,
-        };
-    };
-
-    const fromCurrent = flatten(rawUser);
-    const fromStored = flatten(storedUser);
-
-    const normalized = (o) => ({
-        ...o,
+/* 서버 응답 -> 폼 구조 매핑(빈 문자열/널도 그대로 반영) */
+function mapServerToForm(userId, data) {
+    return {
+        userId: userId || '',
+        name: data?.name ?? '',
+        age: data?.age ?? '',
+        job: data?.job ?? '',
+        avatar: data?.avatar ?? '',
+        gender: data?.gender ?? '',
+        location: data?.location ?? '',
+        introduction: data?.introduction ?? '',
+        interests: Array.isArray(data?.interests) ? data.interests : [],
+        idealRoommate: data?.idealRoommate ?? '',
+        mbti: data?.mbti ?? '',
+        smoking: data?.smoking ?? '',
+        drinking: data?.drinking ?? '',
+        matching: data?.matching ?? false,
         lifestyle: {
-            wakeUpTime: o.wakeUpTime || '',
-            sleepTime: o.sleepTime || '',
-            dayNightPreference: o.dayNightType || o.dayNightPreference || '',
+            wakeUpTime: data?.wakeUpTime ?? '',
+            sleepTime: data?.sleepTime ?? '',
+            dayNightPreference: data?.dayNightType ?? '',
         },
-    });
+        habits: data?.habits ?? EMPTY_FORM.habits,
+    };
+}
 
-    return mergeTruthy(
-        base,
-        normalized(mergeTruthy(fromStored, fromCurrent))
-    );
-};
-
-// 중첩 경로 접근 유틸
+/* 중첩 경로 접근 유틸 */
 const getNestedValue = (obj, path) =>
     (path.split('.').reduce((cur, key) => (cur && cur[key] !== undefined ? cur[key] : ''), obj) ?? '') || '';
 
 const MyEditPage = ({ currentUser, updateUserData }) => {
     const navigate = useNavigate();
 
-    // ✅ userId 안전하게 가져오기
+    /* ✅ userId 안전하게 가져오기 */
     const getUserId = () => {
         if (currentUser?.userId) return currentUser.userId;
         if (currentUser?.id) return currentUser.id;
-        const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
+        const stored = localStorage.getItem('currentUser');
+        if (stored) {
             try {
-                const parsedUser = JSON.parse(storedUser);
-                return parsedUser.userId || parsedUser.id || parsedUser?.profile?.userId || parsedUser?.profile?.id;
-            } catch {
-                return null;
-            }
+                const u = JSON.parse(stored);
+                return u.userId || u.id || u?.profile?.userId || u?.profile?.id;
+            } catch { /* noop */ }
         }
         return null;
     };
 
-    // ✅ 초기값: currentUser & localStorage를 합쳐 세팅
-    const initial = buildInitialFormData(currentUser);
-    const [formData, setFormData] = useState(() => ({
-        ...initial,
-        userId: initial.userId || getUserId() || '', // 최종 보정
-    }));
-
-    const [interestsInput, setInterestsInput] = useState(() =>
-        Array.isArray(initial.interests) ? initial.interests.join(', ') : ''
-    );
+    /* ✅ 폼: 완전 빈 값으로 시작하고, 서버 값으로 1회 수화 */
+    const [formData, setFormData] = useState(EMPTY_FORM);
+    const [hydrated, setHydrated] = useState(false); // 서버값 1회 반영했는지
+    const [interestsInput, setInterestsInput] = useState('');
 
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const fileInputRef = useRef(null);
 
-    // ✅ 마운트 시 서버에서 프로필 로딩 후 truthy 병합
+    /* ✅ 마운트 시 서버에서 프로필 로딩 → 최초 1회만 덮어쓰기 */
     useEffect(() => {
-        let isMounted = true;
+        let mounted = true;
 
-        const currentUserId = getUserId();
-        if (!currentUserId) {
+        const uid = getUserId();
+        if (!uid) {
             setError('사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.');
             return;
         }
 
-        const loadProfile = async () => {
+        const load = async () => {
             setIsLoading(true);
             setError(null);
             try {
-                const data = await fetchProfile(currentUserId);
-                if (!isMounted) return;
+                const data = await fetchProfile(uid);
+                if (!mounted) return;
 
-                const incoming = {
-                    userId: currentUserId,
-                    name: data.name,
-                    age: data.age,
-                    job: data.job,
-                    avatar: data.avatar,
-                    gender: data.gender,
-                    location: data.location,
-                    introduction: data.introduction,
-                    interests: data.interests,
-                    idealRoommate: data.idealRoommate,
-                    mbti: data.mbti,
-                    smoking: data.smoking,
-                    drinking: data.drinking,
-                    matching: data.matching,
-                    wakeUpTime: data.wakeUpTime,
-                    sleepTime: data.sleepTime,
-                    dayNightType: data.dayNightType,
-                    habits: data.habits,
-                };
-
-                const merged = mergeTruthy(formData, {
-                    ...incoming,
-                    lifestyle: {
-                        wakeUpTime: incoming.wakeUpTime,
-                        sleepTime: incoming.sleepTime,
-                        dayNightPreference: incoming.dayNightType,
-                    },
-                });
-
-                setFormData(merged);
-                setInterestsInput(Array.isArray(merged.interests) ? merged.interests.join(', ') : '');
-            } catch (err) {
-                console.error('프로필 로딩 실패:', err);
-                if (isMounted) {
-                    setError('프로필을 불러올 수 없습니다. 서버에 연결할 수 없거나 네트워크 문제가 발생했습니다.');
+                if (!hydrated) {
+                    const next = mapServerToForm(uid, data);
+                    setFormData(next);
+                    setInterestsInput(next.interests.join(', '));
+                    setHydrated(true);
                 }
+            } catch (e) {
+                console.error('프로필 로딩 실패:', e);
+                setError('프로필을 불러올 수 없습니다. 서버 또는 네트워크 문제입니다.');
             } finally {
-                if (isMounted) setIsLoading(false);
+                if (mounted) setIsLoading(false);
             }
         };
 
-        loadProfile();
-        return () => { isMounted = false; };
+        load();
+        return () => { mounted = false; };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // 의존성 단순화
+    }, []);
 
-    // ✅ blob URL 정리
+    /* blob URL 정리 */
     useEffect(() => {
         return () => {
             if (formData.avatar && typeof formData.avatar === 'string' && formData.avatar.startsWith('blob:')) {
@@ -213,7 +135,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
         };
     }, [formData.avatar]);
 
-    // ===================== 핸들러들 =====================
+    /* ============ 핸들러들 ============ */
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -239,20 +161,20 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
 
     const handleFileChange = (e) => {
         const file = e.target.files?.[0];
-        if (file) {
-            if (formData.avatar && typeof formData.avatar === 'string' && formData.avatar.startsWith('blob:')) {
-                URL.revokeObjectURL(formData.avatar);
-            }
-            setFormData((prev) => ({
-                ...prev,
-                avatarFile: file,
-                avatar: URL.createObjectURL(file),
-            }));
+        if (!file) return;
+        if (formData.avatar && String(formData.avatar).startsWith('blob:')) {
+            URL.revokeObjectURL(formData.avatar);
         }
+        setFormData((prev) => ({
+            ...prev,
+            avatarFile: file,
+            avatar: URL.createObjectURL(file),
+        }));
     };
 
     const handleAvatarClick = () => fileInputRef.current?.click();
 
+    /* 컴포넌트 로컬 버전의 관심사 저장(fetch 사용) */
     const submitInterests = async (userId, interests) => {
         const token = localStorage.getItem('accessToken');
         if (!token) throw new Error('로그인이 필요합니다.');
@@ -270,18 +192,12 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
             const errorText = await res.text();
             throw new Error(`관심사 저장 실패: ${res.status} ${errorText}`);
         }
-
-        const resultText = await res.text();
-        console.log('✅ 관심사 저장 응답:', resultText);
-        return resultText;
+        return res.text();
     };
 
     const handleSave = async () => {
-        const currentUserId = formData.userId || getUserId();
-        if (!currentUserId) {
-            alert('userId가 비어 있습니다! 로그인 상태를 확인하세요.');
-            return;
-        }
+        const uid = formData.userId || getUserId();
+        if (!uid) { alert('userId가 비어 있습니다! 로그인 상태를 확인하세요.'); return; }
 
         if (!formData.name || !formData.age || !formData.job) {
             alert('이름, 나이, 직업은 필수 입력 항목입니다.');
@@ -306,51 +222,46 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                 avatarUrl = await uploadAvatar(formData.avatarFile);
             }
 
-            const profilePayload = {
-                userId: currentUserId,
-                name: formData.name || '',
-                age: parseInt(formData.age, 10) || 0,
-                gender: formData.gender || '',
-                location: formData.location || '',
-                job: formData.job || '',
-                introduction: formData.introduction || '',
-                idealRoommate: formData.idealRoommate || '',
-                mbti: formData.mbti || '',
-                dayNightType: formData.lifestyle?.dayNightPreference || '',
-                cleanLevel: formData.habits?.cleaning?.cleanLevel || '',
-                noise: formData.habits?.noiseSensitivity?.sensitivityLevel || '',
-                smoking: formData.smoking || '',
-                drinking: formData.drinking || '',
-                avatar: avatarUrl || '',
-                wakeUpTime: formData.lifestyle?.wakeUpTime || '',
-                sleepTime: formData.lifestyle?.sleepTime || '',
+            const payload = {
+                userId: uid,
+                name: formData.name ?? '',
+                age: age || 0,
+                gender: formData.gender ?? '',
+                location: formData.location ?? '',
+                job: formData.job ?? '',
+                introduction: formData.introduction ?? '',
+                idealRoommate: formData.idealRoommate ?? '',
+                mbti: formData.mbti ?? '',
+                dayNightType: formData.lifestyle?.dayNightPreference ?? '',
+                cleanLevel: formData.habits?.cleaning?.cleanLevel ?? '',
+                noise: formData.habits?.noiseSensitivity?.sensitivityLevel ?? '',
+                smoking: formData.smoking ?? '',
+                drinking: formData.drinking ?? '',
+                avatar: avatarUrl ?? '',
+                wakeUpTime: formData.lifestyle?.wakeUpTime ?? '',
+                sleepTime: formData.lifestyle?.sleepTime ?? '',
             };
 
-            console.log('===== ✅ 프로필 저장 =====');
-            await submitProfile(profilePayload);
+            await submitProfile(payload);
+            await submitInterests(uid, formData.interests);
 
-            console.log('===== ✅ 관심사 저장 =====');
-            await submitInterests(currentUserId, formData.interests);
-
-            updateUserData({ ...profilePayload, interests: formData.interests });
+            updateUserData({ ...payload, interests: formData.interests });
             navigate('/mypages');
         } catch (error) {
-            console.error('===== ❌ 저장 실패 =====', error);
+            console.error('저장 실패:', error);
             alert(`프로필 저장에 실패했습니다: ${error.message}`);
         } finally {
             setIsSaving(false);
         }
     };
 
-    // interestsInput ↔ formData.interests 동기화(보기 좋게 유지)
+    /* interestsInput ↔ formData.interests 동기화 */
     useEffect(() => {
         setInterestsInput(Array.isArray(formData.interests) ? formData.interests.join(', ') : '');
     }, [formData.interests]);
 
-    // ===================== 렌더링 =====================
-    if (isLoading) {
-        return <div className="loading">프로필을 불러오는 중...</div>;
-    }
+    /* ============ 렌더링 ============ */
+    if (isLoading) return <div className="loading">프로필을 불러오는 중...</div>;
 
     if (error) {
         return (
@@ -410,9 +321,7 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
         <>
             <div className="meeting-user-detail">
                 <div style={{ textAlign: 'right', marginBottom: '10px' }}>
-                    <Link to="/Mypages" className="btn-edit-profile">
-                        프로필 보기
-                    </Link>
+                    <Link to="/Mypages" className="btn-edit-profile">프로필 보기</Link>
                 </div>
 
                 <div className="profile-header">
@@ -523,13 +432,12 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                         onBlur={() => {
                             const interestsArray = interestsInput
                                 .split(',')
-                                .map((item) => item.trim())
-                                .filter((item) => item.length > 0);
-
+                                .map((s) => s.trim())
+                                .filter((s) => s.length > 0);
                             setFormData((prev) => {
                                 const updated = { ...prev, interests: interestsArray };
 
-                                // 로컬스토리지 반영
+                                // 로컬스토리지 동기화(옵션)
                                 const s = localStorage.getItem('currentUser');
                                 if (s) {
                                     try {
@@ -541,7 +449,6 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                                         localStorage.setItem('currentUser', JSON.stringify(updatedUser));
                                     } catch { }
                                 }
-
                                 return updated;
                             });
                         }}
@@ -576,8 +483,8 @@ const MyEditPage = ({ currentUser, updateUserData }) => {
                                 className="input-field"
                             >
                                 <option value="">선택해주세요</option>
-                                {['ISTJ', 'ISFJ', 'INFJ', 'INTJ', 'ISTP', 'ISFP', 'INFP', 'INTP', 'ESTP', 'ESFP', 'ENFP', 'ENTP', 'ESTJ', 'ESFJ', 'ENFJ', 'ENTJ'].map((type) => (
-                                    <option key={type} value={type}>{type}</option>
+                                {['ISTJ', 'ISFJ', 'INFJ', 'INTJ', 'ISTP', 'ISFP', 'INFP', 'INTP', 'ESTP', 'ESFP', 'ENFP', 'ENTP', 'ESTJ', 'ESFJ', 'ENFJ', 'ENTJ'].map((t) => (
+                                    <option key={t} value={t}>{t}</option>
                                 ))}
                             </select>
                         </div>
